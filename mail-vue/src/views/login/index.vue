@@ -2,32 +2,20 @@
   <div id="login-box" class="login-page" v-loading="oauthLoading" element-loading-text="登录中..."
        :class="{ 'has-background': !!settingStore.settings.background }">
     <div class="login-bg" v-if="settingStore.settings.background" :style="background"></div>
-    <div class="login-glow" v-else></div>
+    <div class="login-grid" aria-hidden="true"></div>
 
-    <main class="login-hero">
-      <div class="hero-brand">
-        <span class="hero-mark">
-          <Icon icon="lucide:mail" width="18" height="18"/>
+    <main class="login-card">
+      <div class="card-brand">
+        <span class="brand-mark">
+          <Icon icon="lucide:mail" width="17" height="17"/>
         </span>
-        <span class="hero-name">{{ settingStore.settings.title }}</span>
+        <span class="brand-name">{{ settingStore.settings.title }}</span>
       </div>
 
-      <h1 class="hero-title">{{ $t('heroTitle') }}</h1>
-      <p class="hero-desc">{{ $t('heroDesc') }}</p>
-
-      <ul class="hero-points">
-        <li><Icon icon="lucide:inbox" width="15" height="15"/><span>{{ $t('heroPoint1') }}</span></li>
-        <li><Icon icon="lucide:paperclip" width="15" height="15"/><span>{{ $t('heroPoint2') }}</span></li>
-        <li><Icon icon="lucide:users" width="15" height="15"/><span>{{ $t('heroPoint3') }}</span></li>
-      </ul>
-    </main>
-
-    <section class="login-panel">
-      <div class="container">
-        <div class="form-head">
-          <h2 class="form-title">{{ show === 'login' ? $t('loginTitle') : $t('regTitle') }}</h2>
-          <p class="form-desc">{{ show === 'login' ? $t('loginSubtitle') : $t('regSubtitle') }}</p>
-        </div>
+      <div class="form-head">
+        <h1 class="form-title">{{ show === 'login' ? $t('loginTitle') : $t('regTitle') }}</h1>
+        <p class="form-desc">{{ show === 'login' ? $t('loginSubtitle') : $t('regSubtitle') }}</p>
+      </div>
 
         <div v-show="show === 'login'">
           <el-input :class="!hideLoginDomain ? 'email-input' : ''" v-model="form.email"
@@ -128,8 +116,7 @@
           <div class="switch" @click="show = 'login'" v-else>{{ $t('hasAccount') }} <span>{{ $t('loginSwitch') }}</span>
           </div>
         </template>
-        </div>
-    </section>
+    </main>
 
     <el-dialog class="bind-dialog" v-model="showBindForm"  title="注册邮箱" >
       <div class="bind-container">
@@ -166,7 +153,7 @@
       </div>
     </el-dialog>
     <a v-show="settingStore.settings.projectLink" class="github" href="https://github.com/maillab/cloud-mail">
-      <Icon icon="lucide:github" color="#1890ff" width="20" height="20" />
+      <Icon icon="lucide:github" width="18" height="18"/>
     </a>
   </div>
 </template>
@@ -667,233 +654,237 @@ function submitRegister() {
 
 <style lang="scss" scoped>
 .login-page {
+  --grid-line: rgba(22, 32, 42, .05);
+  --grid-line-strong: rgba(22, 32, 42, .12);
+  --grid-size: 34px;
+  --grid-size-major: 170px;
+  --glow: rgba(70, 191, 208, .16);
+
   position: relative;
   height: 100%;
-  width: 100%;
-  overflow: hidden;
+  min-height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr);
-  background: #070d12;
-  color: #e6eef4;
+  place-items: center;
+  padding: 40px 20px;
+  overflow: hidden;
   isolation: isolate;
+  background: var(--cm-canvas);
+}
+
+html.dark .login-page {
+  --grid-line: rgba(255, 255, 255, .04);
+  --grid-line-strong: rgba(255, 255, 255, .1);
+  --glow: rgba(70, 191, 208, .14);
+}
+
+/* 网格底纹：中线清晰，四周淡出 */
+.login-grid {
+  position: absolute;
+  inset: -1px;
+  z-index: -2;
+  background-image:
+    linear-gradient(to right, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    var(--grid-size-major) var(--grid-size-major),
+    var(--grid-size-major) var(--grid-size-major),
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
+  background-position: center center;
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 46%, #000 42%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 46%, #000 42%, transparent 100%);
+}
+
+/* 中心品牌光晕 */
+.login-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(760px 440px at 50% 36%, var(--glow), transparent 72%);
+  pointer-events: none;
 }
 
 .login-bg {
   position: absolute;
   inset: 0;
+  z-index: -2;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  z-index: -2;
 
   &::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(5, 11, 16, .62);
+    background: rgba(8, 14, 20, .55);
   }
 }
 
-.login-glow {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(900px 600px at 12% -10%, rgba(70, 191, 208, .20), transparent 60%),
-    radial-gradient(700px 520px at 78% 108%, rgba(48, 108, 148, .22), transparent 62%),
-    linear-gradient(160deg, #081016 0%, #0a131a 55%, #070d12 100%);
+.login-page.has-background {
+  .login-grid { display: none; }
+
+  &::after { display: none; }
 }
 
-.login-hero {
-  align-self: center;
-  padding: 0 clamp(28px, 6vw, 96px);
-  max-width: 640px;
+/* ---------- 卡片 ---------- */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  padding: 30px 28px 26px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-line);
+  border-radius: 18px;
+  box-shadow: var(--cm-shadow-2);
 }
 
-.hero-brand {
+.card-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: clamp(28px, 6vh, 56px);
+  gap: 9px;
+  margin-bottom: 22px;
 }
 
-.hero-mark {
+.brand-mark {
   width: 30px;
   height: 30px;
+  flex: 0 0 30px;
   border-radius: 10px;
   display: grid;
   place-items: center;
-  background: #46bfd0;
-  color: #052a31;
-  box-shadow: 0 8px 24px -10px rgba(70, 191, 208, .9);
+  background: var(--cm-brand);
+  color: var(--cm-brand-ink);
+  box-shadow: 0 6px 16px -8px rgba(70, 191, 208, .95);
 }
 
-.hero-name {
-  font-size: 15px;
-  font-weight: 620;
+.brand-name {
+  font-size: 14.5px;
+  font-weight: 640;
   letter-spacing: -.01em;
-  color: #e9f3f7;
+  color: var(--cm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.hero-title {
+.form-head { margin-bottom: 20px; }
+
+.form-title {
   margin: 0;
-  max-width: 11em;
-  text-wrap: balance;
-  font-size: clamp(28px, 2.9vw, 40px);
-  line-height: 1.18;
-  font-weight: 680;
-  letter-spacing: -.03em;
-  color: #f2f8fb;
+  font-size: 23px;
+  line-height: 1.3;
+  font-weight: 660;
+  letter-spacing: -.025em;
+  color: var(--cm-text);
 }
 
-.hero-desc {
-  margin: 16px 0 0;
-  max-width: 26em;
-  font-size: clamp(14px, 1.15vw, 16px);
-  line-height: 1.8;
-  color: rgba(206, 224, 233, .72);
-  max-width: 30em;
+.form-desc {
+  margin: 7px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cm-text-3);
 }
 
-.hero-points {
-  margin: 34px 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13.5px;
-    color: rgba(198, 218, 228, .8);
-
-    .iconify { color: #6cd3e1; }
-  }
+.btn {
+  height: 44px;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 600;
 }
 
-.login-panel {
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28px clamp(20px, 4vw, 56px);
-  background: rgba(9, 16, 22, .55);
-  border-left: 1px solid rgba(255, 255, 255, .06);
-  backdrop-filter: blur(18px);
+.el-input,
+:deep(.el-input) {
+  height: 44px;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
-.container {
-  width: min(400px, 100%);
-  display: flex;
-  flex-direction: column;
-
-  .btn {
-    height: 44px;
-    width: 100%;
-    border-radius: 10px;
-    font-weight: 600;
-  }
-
-  .form-head { margin-bottom: 26px; }
-
-  .form-title {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 660;
-    letter-spacing: -.02em;
-    color: #f2f8fb;
-  }
-
-  .form-desc {
-    margin: 7px 0 0;
-    font-size: 13px;
-    line-height: 1.6;
-    color: rgba(190, 210, 220, .62);
-  }
-
-  .switch {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 13px;
-    color: rgba(190, 210, 220, .6);
-
-    span {
-      color: #6cd3e1;
-      cursor: pointer;
-      margin-left: 3px;
-
-      &:hover { text-decoration: underline; }
-    }
-  }
-
-  .el-input {
-    height: 44px;
-    width: 100%;
-    margin-bottom: 12px;
-  }
-
-  :deep(.el-input__wrapper) {
-    min-height: 44px;
-    padding: 0 13px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, .04);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, .1) inset;
-  }
-
-  :deep(.el-input__wrapper:hover) { box-shadow: 0 0 0 1px rgba(255, 255, 255, .2) inset; }
-
-  :deep(.el-input__wrapper.is-focus) {
-    box-shadow: 0 0 0 1px #46bfd0 inset, 0 0 0 3px rgba(70, 191, 208, .16);
-  }
-
-  :deep(.el-input__inner) { color: #e9f3f7; }
-
-  :deep(.el-input__inner::placeholder) { color: rgba(180, 202, 214, .45); }
-
-  .email-input :deep(.el-input__wrapper) { border-radius: 10px 0 0 10px; }
-
-  :deep(.el-input-group__append) {
-    padding: 0 !important;
-    padding-left: 10px !important;
-    padding-right: 8px !important;
-    background: rgba(255, 255, 255, .04);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, .1) inset;
-    border-radius: 0 10px 10px 0;
-    color: #cfe3ea;
-  }
-
-  :deep(.el-button--primary) {
-    --el-button-text-color: #052a31;
-    --el-button-hover-text-color: #052a31;
-    --el-button-bg-color: #46bfd0;
-    --el-button-border-color: #46bfd0;
-    --el-button-hover-bg-color: #63ccdb;
-    --el-button-hover-border-color: #63ccdb;
-  }
-
-  :deep(.el-button + .el-button) { margin: 10px 0 0; }
-
-  :deep(.el-button:not(.el-button--primary)) {
-    background: rgba(255, 255, 255, .04);
-    border-color: rgba(255, 255, 255, .12);
-    color: #d7e7ee;
-
-    &:hover { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .2); }
-  }
+:deep(.el-input__wrapper) {
+  min-height: 44px;
+  padding: 0 13px;
+  border-radius: 10px;
+  background: var(--cm-surface);
+  box-shadow: 0 0 0 1px var(--cm-line-strong) inset;
 }
 
-.setting-icon { color: rgba(200, 220, 230, .6); }
+:deep(.el-input__wrapper:hover) { box-shadow: 0 0 0 1px var(--cm-text-3) inset; }
+
+:deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--cm-brand-soft);
+}
+
+:deep(.el-input__inner) { color: var(--cm-text); }
+
+.email-input :deep(.el-input__wrapper) { border-radius: 10px 0 0 10px; }
+
+:deep(.el-input-group__append) {
+  padding: 0 !important;
+  padding-left: 10px !important;
+  padding-right: 8px !important;
+  background: var(--cm-surface-soft);
+  box-shadow: 0 0 0 1px var(--cm-line-strong) inset;
+  border-radius: 0 10px 10px 0;
+  color: var(--cm-text-2);
+}
 
 .domain-suffix {
   display: flex;
   align-items: center;
   gap: 2px;
-  color: #cfe3ea;
+  color: var(--cm-text-2);
   font-size: 13px;
+}
+
+.setting-icon { color: var(--cm-text-3); }
+
+:deep(.el-button--primary) {
+  --el-button-text-color: var(--cm-brand-ink);
+  --el-button-hover-text-color: var(--cm-brand-ink);
+  --el-button-bg-color: var(--cm-brand);
+  --el-button-border-color: var(--cm-brand);
+  --el-button-hover-bg-color: var(--cm-brand-hover);
+  --el-button-hover-border-color: var(--cm-brand-hover);
+  --el-button-active-bg-color: var(--cm-brand-press);
+  --el-button-active-border-color: var(--cm-brand-press);
+}
+
+:deep(.el-button + .el-button) { margin: 10px 0 0; }
+
+:deep(.el-button:not(.el-button--primary)) {
+  background: var(--cm-surface);
+  border-color: var(--cm-line-strong);
+  color: var(--cm-text-2);
+
+  &:hover {
+    background: var(--cm-surface-soft);
+    border-color: var(--cm-brand);
+    color: var(--cm-text);
+  }
+}
+
+.switch {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--cm-text-3);
+
+  span {
+    color: var(--cm-brand-strong);
+    cursor: pointer;
+    margin-left: 3px;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+:deep(.el-loading-mask) {
+  background-color: var(--cm-overlay);
+  backdrop-filter: blur(2px);
 }
 
 .select {
@@ -930,41 +921,31 @@ function submitRegister() {
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  background: rgba(255, 255, 255, .06);
-  bottom: 16px;
-  right: 16px;
+  background: var(--cm-surface);
+  bottom: 18px;
+  right: 18px;
   z-index: 10;
-  border: 1px solid rgba(255, 255, 255, .1);
-  color: #9fc4d2;
+  border: 1px solid var(--cm-line);
+  color: var(--cm-text-3);
+  box-shadow: var(--cm-shadow-1);
   cursor: pointer;
 
-  &:hover { background: rgba(255, 255, 255, .1); color: #e9f3f7; }
+  &:hover { color: var(--cm-text); border-color: var(--cm-line-strong); }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 767px) {
   .login-page {
-    grid-template-columns: 1fr;
-    background: #070d12;
+    padding: 24px 16px;
+    align-items: center;
   }
 
-  .login-hero { display: none; }
-
-  .login-panel {
-    align-self: center;
-    background: transparent;
-    border-left: 0;
-    backdrop-filter: none;
-    padding: 20px;
+  .login-card {
+    padding: 24px 20px 22px;
+    border-radius: 16px;
   }
 
-  .container {
-    width: min(420px, 100%);
-    padding: 26px 22px;
-    border-radius: 18px;
-    background: rgba(13, 21, 28, .82);
-    border: 1px solid rgba(255, 255, 255, .08);
-    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .9);
-    backdrop-filter: blur(16px);
-  }
+  .form-title { font-size: 21px; }
+
+  .github { bottom: 12px; right: 12px; }
 }
 </style>
