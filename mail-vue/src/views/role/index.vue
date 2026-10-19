@@ -1,9 +1,20 @@
 <template>
-  <div class="perm-box">
-    <div class="header-actions">
-      <Icon class="icon" icon="ion:add-outline" width="23" height="23" @click="openAddRole"/>
-      <Icon class="icon" icon="ion:reload" width="18" height="18" @click="refresh"/>
+  <div class="perm-box cm-page">
+    <div class="cm-toolbar">
+      <div class="cm-toolbar__group">
+        <button class="cm-icon-btn" type="button" :title="$t('add')" @click="openAddRole">
+          <Icon icon="lucide:plus" width="17" height="17"/>
+        </button>
+      </div>
+      <div class="cm-toolbar__spacer"></div>
+      <div class="cm-toolbar__group">
+        <button class="cm-icon-btn" type="button" :title="$t('refresh')" @click="refresh">
+          <Icon icon="lucide:refresh-cw" width="16" height="16"/>
+        </button>
+      </div>
     </div>
+
+    <div class="cm-surface table-card">
     <el-scrollbar class="perm-scrollbar">
       <div class="loading" :class="tableLoading ? 'loading-show' : 'loading-hide'"
            :style="first ? 'background: transparent' : ''">
@@ -47,6 +58,7 @@
         </el-table-column>
       </el-table>
     </el-scrollbar>
+    </div>
     <el-dialog top="5vh" class="dialog" v-model="roleFormShow" @closed="resetForm">
       <template #header>
         <span style="font-size: 18px">{{ dialogType.title }}</span>
@@ -56,7 +68,7 @@
             placement="bottom"
         >
           <template #reference>
-            <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+            <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
           </template>
           <div style="font-weight: bold;;margin-bottom: 2px;">{{ t('emailInterception') }}</div>
           <div>{{ t('emailInterceptionDesc') }}</div>
@@ -420,10 +432,19 @@ window.onresize = () => {
   height: 100%;
   overflow: hidden;
   width: 100%;
+}
 
-  .perm-scrollbar {
-    height: 100%;
-  }
+.table-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.perm-scrollbar {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .send-num {
@@ -437,29 +458,6 @@ window.onresize = () => {
 .def-tag {
   margin-left: 10px;
   height: 20px;
-}
-
-.header-actions {
-  padding: 9px 15px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  box-shadow: var(--header-actions-border);
-  font-size: 18px;
-
-  .search {
-    :deep(.el-input-group) {
-      height: 28px;
-    }
-
-    :deep(.el-input__inner) {
-      height: 28px;
-    }
-  }
-
-  .icon {
-    cursor: pointer;
-  }
 }
 
 .warning {
@@ -477,7 +475,7 @@ window.onresize = () => {
 }
 
 .loading {
-  height: calc(100% - 41px);
+  height: 100%;
   width: 100%;
   display: flex;
   align-items: center;

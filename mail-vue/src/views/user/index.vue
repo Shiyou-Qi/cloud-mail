@@ -1,30 +1,48 @@
 <template>
-  <div class="user-box">
-    <div class="header-actions">
-      <Icon class="icon" icon="ion:add-outline" width="23" height="23" @click="openAdd"/>
-      <div class="search">
-        <el-input
-            v-model="params.email"
-            class="search-input"
-            :placeholder="$t('searchByEmail')"
-        >
-        </el-input>
+  <div class="user-box cm-page">
+    <div class="cm-toolbar">
+      <div class="cm-toolbar__group">
+        <button class="cm-icon-btn" type="button" :title="$t('add')" @click="openAdd">
+          <Icon icon="lucide:plus" width="17" height="17"/>
+        </button>
       </div>
-      <el-select v-model="params.status" placeholder="Select" class="status-select"
-                 :style="`width: ${locale === 'en' ? 95 : 80 }px`">
+      <span class="cm-toolbar__sep"></span>
+
+      <el-input
+          v-model="params.email"
+          class="user-search"
+          :placeholder="$t('searchByEmail')"
+          clearable
+          @keyup.enter="search"
+      >
+        <template #prefix>
+          <Icon icon="lucide:search" width="15" height="15"/>
+        </template>
+      </el-input>
+      <el-select v-model="params.status" class="user-status" :teleported="true">
         <el-option :key="-1" :label="$t('all')" :value="-1"/>
         <el-option :key="0" :label="$t('active')" :value="0"/>
         <el-option :key="1" :label="$t('banned')" :value="1"/>
         <el-option :key="-2" :label="$t('deleted')" :value="-2"/>
       </el-select>
-      <Icon class="icon" icon="iconoir:search" @click="search" width="20" height="20"/>
-      <Icon class="icon" @click="changeTimeSort" icon="material-symbols-light:timer-arrow-down-outline"
-            v-if="params.timeSort === 1" width="28" height="28"/>
-      <Icon class="icon" @click="changeTimeSort" icon="material-symbols-light:timer-arrow-up-outline" v-else width="28"
-            height="28"/>
-      <Icon class="icon" icon="ion:reload" width="18" height="18" @click="refresh"/>
-      <Icon class="icon" icon="uiw:delete" width="16" height="16" @click="delUser"/>
+
+      <div class="cm-toolbar__spacer"></div>
+
+      <div class="cm-toolbar__group">
+        <button class="cm-icon-btn" type="button" :title="$t('sort')" @click="changeTimeSort">
+          <Icon :icon="params.timeSort === 1 ? 'lucide:arrow-down' : 'lucide:arrow-up'"
+                width="16" height="16"/>
+        </button>
+        <button class="cm-icon-btn" type="button" :title="$t('refresh')" @click="refresh">
+          <Icon icon="lucide:refresh-cw" width="16" height="16"/>
+        </button>
+        <button class="cm-icon-btn is-danger" type="button" :title="$t('delete')" @click="delUser">
+          <Icon icon="lucide:trash-2" width="16" height="16"/>
+        </button>
+      </div>
     </div>
+
+    <div class="cm-surface table-card">
     <el-scrollbar ref="scrollbarRef" class="scrollbar">
       <div>
         <div class="loading" :class="tableLoading ? 'loading-show' : 'loading-hide'"
@@ -143,6 +161,7 @@
         </div>
       </div>
     </el-scrollbar>
+    </div>
     <el-dialog class="dialog" v-model="setPwdShow" :title="$t('changePassword')" @closed="resetUserForm">
       <div class="dialog-box">
         <el-input v-model="userForm.password" type="password" :placeholder="$t('newPassword')" autocomplete="off" @keyup.enter="updatePwd">
@@ -185,7 +204,7 @@
               </div>
               <div>
                 <span>{{ addForm.suffix }}</span>
-                <Icon class="setting-icon" icon="mingcute:down-small-fill" width="20" height="20"/>
+                <Icon class="setting-icon" icon="lucide:chevron-down" width="20" height="20"/>
               </div>
             </div>
           </template>
@@ -320,7 +339,7 @@
           <el-dropdown-item @click="openSetPwd(rightClickUser)">
             <template #default>
               <div class="right-dropdown-item">
-                <icon icon="fluent:fingerprint-20-filled" width="22" height="22" />
+                <icon icon="lucide:key-round" width="22" height="22" />
                 <span>{{t('changePassword')}}</span>
               </div>
             </template>
@@ -328,7 +347,7 @@
           <el-dropdown-item @click="openSetType(rightClickUser)">
             <template #default>
               <div class="right-dropdown-item">
-                <icon icon="fluent:lock-closed-16-regular" width="21" height="21" />
+                <icon icon="lucide:shield-check" width="21" height="21" />
                 <span>{{ t('setRole') }}</span>
               </div>
             </template>
@@ -336,12 +355,12 @@
           <el-dropdown-item v-if="rightClickUser.type !== 0">
             <template #default>
               <div class="right-dropdown-item" v-if="rightClickUser.isDel !== 1" @click="setStatus(rightClickUser)" >
-                <Icon icon="ion:reload" v-if="rightClickUser.status" style="margin-left: 1px;margin-right: 1px" width="19" height="19" />
-                <Icon icon="ion:ban-outline" v-else style="margin-left: 1px;margin-right: 1px" width="19" height="19" />
+                <Icon icon="lucide:refresh-cw" v-if="rightClickUser.status" style="margin-left: 1px;margin-right: 1px" width="19" height="19" />
+                <Icon icon="lucide:ban" v-else style="margin-left: 1px;margin-right: 1px" width="19" height="19" />
                 <span>{{ setRightStatusName(rightClickUser) }}</span>
               </div>
               <div class="right-dropdown-item" v-else @click="restore(rightClickUser)">
-                <Icon icon="ion:reload" style="margin-left: 1px;margin-right: 1px" width="19" height="19" />
+                <Icon icon="lucide:refresh-cw" style="margin-left: 1px;margin-right: 1px" width="19" height="19" />
                 <span>{{ t('restoreUser') }}</span>
               </div>
             </template>
@@ -349,7 +368,7 @@
           <el-dropdown-item @click="openAccountList(rightClickUser.userId)" >
             <template #default>
               <div class="right-dropdown-item" >
-                <Icon icon="hugeicons:mailbox-01" width="20" height="20" />
+                <Icon icon="lucide:inbox" width="20" height="20" />
                 <span>{{ t('userEmail') }}</span>
               </div>
             </template>
@@ -357,7 +376,7 @@
           <el-dropdown-item @click="openDetails(rightClickUser)" >
             <template #default>
               <div class="right-dropdown-item" >
-                <Icon icon="si:user-alt-2-line" width="20" height="20" />
+                <Icon icon="lucide:users" width="20" height="20" />
                 <span>{{ t('userDetails') }}</span>
               </div>
             </template>
@@ -365,7 +384,7 @@
           <el-dropdown-item v-if="rightClickUser.type !== 0" @click="delOneUser(rightClickUser)" >
             <template #default>
               <div class="right-dropdown-item" >
-                <Icon icon="uiw:delete" width="18" height="18" style="margin-left: 1px;margin-right: 1px" />
+                <Icon icon="lucide:trash-2" width="18" height="18" style="margin-left: 1px;margin-right: 1px" />
                 <span>{{ t('adminDeleteUser') }}</span>
               </div>
             </template>
@@ -409,8 +428,8 @@ const roleStore = useRoleStore()
 const userStore = useUserStore()
 const settingStore = useSettingStore()
 const oauthPlatformMap = {
-  google: { key: 'google', label: 'Google', icon: 'devicon:google', iconType: 'iconify' },
-  github: { key: 'github', label: 'GitHub', icon: 'codicon:github-inverted', iconType: 'iconify' },
+  google: { key: 'google', label: 'Google', icon: 'logos:google-icon', iconType: 'iconify' },
+  github: { key: 'github', label: 'GitHub', icon: 'lucide:github', iconType: 'iconify' },
   linuxdo: { key: 'linuxdo', label: 'LinuxDo', icon: '/image/linuxdo.webp', iconType: 'image' },
 }
 function oauthPlatform(row) {
@@ -1092,6 +1111,22 @@ function adjustWidth() {
   height: 100%;
 }
 
+.table-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-search { width: min(240px, 40vw); }
+.user-status { width: 108px; }
+
+@media (max-width: 640px) {
+  .user-search { flex: 1 1 100%; width: auto; order: -1; }
+  .user-status { flex: 0 0 104px; }
+}
+
 :deep(.el-dialog) {
   width: 400px !important;
   @media (max-width: 440px) {
@@ -1107,34 +1142,6 @@ function adjustWidth() {
     width: calc(100% - 40px) !important;
     margin-right: 20px !important;
     margin-left: 20px !important;
-  }
-}
-
-.header-actions {
-  padding: 9px 15px;
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  align-items: center;
-  box-shadow: var(--header-actions-border);
-  font-size: 18px;
-
-  .search-input {
-    width: min(200px, calc(100vw - 140px));
-  }
-
-  .search {
-    :deep(.el-input-group) {
-      height: 28px;
-    }
-
-    :deep(.el-input__inner) {
-      height: 28px;
-    }
-  }
-
-  .icon {
-    cursor: pointer;
   }
 }
 
@@ -1156,11 +1163,18 @@ function adjustWidth() {
 
 .scrollbar {
   width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
-  height: calc(100% - 50px);
-  @media (max-width: 464px) {
-    height: calc(100% - 90px);
-  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--cm-line);
 }
 
 .details {
@@ -1169,7 +1183,7 @@ function adjustWidth() {
   gap: 10px;
   .details-item-title {
     white-space: pre;
-    color: #909399;
+    color: var(--cm-text-3);
     font-weight: bold;
     padding-right: 10px;
   }
@@ -1319,7 +1333,7 @@ function adjustWidth() {
 }
 
 :deep(.el-table th.el-table__cell>.cell.highlight) {
-  color: #909399;
+  color: var(--cm-text-3);
 }
 
 :deep(.el-table__inner-wrapper:before) {

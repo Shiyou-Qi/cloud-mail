@@ -2,8 +2,8 @@
   <el-container class="layout">
     <el-aside
         class="aside"
-        :class="uiStore.asideShow ? 'aside-show' : 'el-aside-hide'">
-      <Aside />
+        :class="[uiStore.asideShow ? 'aside-show' : 'el-aside-hide', asideCollapsed ? 'aside-collapsed' : '']">
+      <Aside :collapsed="asideCollapsed" />
     </el-aside>
     <div
         :class="(uiStore.asideShow && isMobile)? 'overlay-show':'overlay-hide'"
@@ -25,13 +25,14 @@
 import Aside from '@/layout/aside/index.vue'
 import Header from '@/layout/header/index.vue'
 import Main from '@/layout/main/index.vue'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import {useUiStore} from "@/store/ui.js";
 import writer from '@/layout/write/index.vue'
 
 const uiStore = useUiStore();
 const writerRef = ref({})
 const isMobile = ref(window.innerWidth < 1025)
+const asideCollapsed = computed(() => uiStore.asideCollapsed && !isMobile.value)
 const handleResize = () => {
   isMobile.value = window.innerWidth < 1025
   uiStore.asideShow = window.innerWidth > 1024;
@@ -50,36 +51,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-.el-aside-hide {
-  position: fixed;
-  left: 0;
-  height: 100%;
-  z-index: 100;
-  transform: translateX(-100%);
-  transition: all 100ms ease;
-}
-
-.aside-show {
-  -webkit-box-shadow: var(--aside-right-border);
-  box-shadow: var(--aside-right-border);
-  transform: translateX(0);
-  transition: all 100ms ease;
-  z-index: 101;
-  @media (max-width: 1025px) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 101;
-    height: 100%;
-    background: var(--el-bg-color);
-  }
-}
-
-.el-aside {
-  width: auto;
-  transition: all 100ms ease;
-}
-
 .layout {
   height: 100%;
   position: fixed;
@@ -87,34 +58,76 @@ onBeforeUnmount(() => {
   top: 0;
   left: 0;
   overflow: hidden;
+  background: var(--cm-canvas);
+}
+
+.el-aside {
+  width: var(--cm-aside-w);
+  flex: 0 0 auto;
+  transition: width 180ms ease, transform 180ms ease;
+  background: var(--cm-surface);
+}
+
+.el-aside.aside-collapsed { width: var(--cm-aside-w-collapsed); }
+
+.aside-show {
+  transform: translateX(0);
+  z-index: 101;
+
+  @media (max-width: 1024px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--cm-aside-w);
+    box-shadow: var(--cm-shadow-2);
+  }
+}
+
+.el-aside-hide {
+  position: fixed;
+  left: 0;
+  height: 100%;
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 160ms ease;
+}
+
+@media (max-width: 1024px) {
+  .el-aside { width: var(--cm-aside-w); }
+  .el-aside.aside-collapsed { width: var(--cm-aside-w); }
 }
 
 .main-container {
   min-height: 100%;
-  background: var(--el-bg-color);
-  overflow-y: auto;
+  min-width: 0;
+  background: var(--cm-canvas);
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
 .el-main {
   padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .el-header {
-  background: var(--el-bg-color);
-  border-bottom: solid 1px var(--el-border-color);
-  padding: 0 0 0 0;
+  height: var(--cm-header-h) !important;
+  flex: 0 0 var(--cm-header-h);
+  padding: 0;
+  background: var(--cm-surface);
 }
 
 .overlay-show {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 99;
-  transition: all 0.3s;
+  inset: 0;
+  background: var(--cm-overlay);
+  z-index: 100;
+  transition: opacity .2s ease;
+  backdrop-filter: blur(1px);
 }
 
 .overlay-hide {

@@ -19,18 +19,19 @@
     }
     const metaTag = document.getElementById('theme-color-meta');
     const isMobile =  !window.matchMedia("(pointer: fine) and (hover: hover)").matches;
-    metaTag.setAttribute('content', isDark ? (isMobile ? '#141414' : '#000000') : (isMobile ? '#191A23' : '#F1F1F1'));
+    metaTag.setAttribute('content', isDark ? '#0a0f14' : '#f5f7fa');
   </script>
 </head>
 <style>
   html {
-    background: #FFFFFF;
+    background: #f5f7fa;
   }
-  .dark {
-    background: #141414;
+  html.dark {
+    background: #0a0f14;
   }
   #loading-first {
     position: fixed;
+    background: #f5f7fa;
     left: 0;
     top: 0;
     height: 100%;
@@ -39,8 +40,9 @@
     justify-content: center;
     align-items: center;
     z-index: 500;
-    background: var(--el-bg-color);
   }
+
+  html.dark #loading-first { background: #0a0f14; }
 
   .loading-hide {
     pointer-events: none;
@@ -67,7 +69,7 @@
     height: 4px;
     overflow: hidden;
     border-radius: 999px;
-    background: rgba(64, 158, 255, 0.18);
+    background: rgba(70, 191, 208, 0.18);
   }
 
   .loading-progress::before {
@@ -78,7 +80,7 @@
     width: 100%;
     height: 100%;
     border-radius: inherit;
-    background: #409EFF;
+    background: #46bfd0;
     transform: scaleX(0);
     transform-origin: left center;
     animation: loading-progress-grow 2.4s linear forwards;
@@ -91,7 +93,7 @@
     width: 24px;
     height: 100%;
     border-radius: inherit;
-    background: rgba(64, 158, 255, 0.45);
+    background: rgba(70, 191, 208, 0.45);
     filter: blur(4px);
     transform: translateX(-24px);
     animation: loading-progress-peg 2.4s linear forwards;

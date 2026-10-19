@@ -26,3 +26,6 @@ mail-vue/dist
 .wrangler
 .venv
 git-tools.js
+
+# 本地视觉验收产物（截图 / mock 接口 / 记忆），不纳入仓库
+.workbuddy

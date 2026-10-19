@@ -53,7 +53,7 @@
                 <div>
                   <span>{{ $t('multipleEmail') }}</span>
                   <el-tooltip effect="dark" :content="$t('multipleEmailDesc')">
-                    <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                    <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
                   </el-tooltip>
                 </div>
                 <div>
@@ -65,7 +65,7 @@
                 <div>
                   <span>{{ $t('syncDelete') }}</span>
                   <el-tooltip effect="dark" :content="$t('syncDeleteDesc')">
-                    <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                    <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
                   </el-tooltip>
                 </div>
                 <div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="forward">
                   <el-button class="opt-button" size="small" type="primary" @click="openEmailPrefix">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -95,7 +95,7 @@
                 <div class="email-title">
                   <span>{{ setting.title }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="editTitleShow = true">
-                    <Icon icon="lsicon:edit-outline" width="16" height="16"/>
+                    <Icon icon="lucide:pencil" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -118,16 +118,16 @@
                   >
                     <template #error>
                       <div class="error-image">
-                        <Icon icon="ph:image" width="24" height="24"/>
+                        <Icon icon="lucide:image" width="24" height="24"/>
                       </div>
                     </template>
                   </el-image>
                   <div class="background-btn">
                     <el-button class="opt-button" size="small" type="primary" @click="openSetBackground">
-                      <Icon icon="lsicon:edit-outline" width="16" height="16"/>
+                      <Icon icon="lucide:pencil" width="16" height="16"/>
                     </el-button>
                     <el-button class="opt-button" size="small" type="primary" @click="delBackground">
-                      <Icon icon="material-symbols:delete-outline-rounded" width="16" height="16"/>
+                      <Icon icon="lucide:trash-2" width="16" height="16"/>
                     </el-button>
                   </div>
                 </div>
@@ -150,7 +150,7 @@
                 <div>
                   <span>{{ $t('autoRefresh') }}</span>
                   <el-tooltip effect="dark" :content="$t('autoRefreshDesc')">
-                    <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                    <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
                   </el-tooltip>
                 </div>
                 <div>
@@ -180,7 +180,7 @@
                 <div>
                   <span>{{ $t('noRecipientTitle') }}</span>
                   <el-tooltip effect="dark" :content="$t('noRecipientDesc')">
-                    <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                    <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
                   </el-tooltip>
                 </div>
                 <div>
@@ -196,11 +196,11 @@
                 <div v-else>
                   <el-button class="opt-button" style="margin-top: 0" @click="openResendList" size="small"
                              type="primary">
-                    <Icon icon="ic:round-list" width="18" height="18"/>
+                    <Icon icon="lucide:rows-3" width="18" height="18"/>
                   </el-button>
                   <el-button class="opt-button" style="margin-top: 0" @click="openResendForm" size="small"
                              type="primary">
-                    <Icon icon="material-symbols:add-rounded" width="16" height="16"/>
+                    <Icon icon="lucide:plus" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -209,7 +209,7 @@
                 <div>
                   <el-button class="opt-button" style="margin-top: 0" @click="openBlackListForm" size="small"
                              type="primary">
-                    <Icon icon="fluent:settings-48-regular" width="16" height="16"/>
+                    <Icon icon="lucide:settings" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -217,14 +217,14 @@
                 <div>
                   <span>{{ $t('autoClean') }}</span>
                   <el-tooltip effect="dark" :content="$t('autoCleanDesc')">
-                    <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                    <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
                   </el-tooltip>
                 </div>
                 <div class="forward">
                   <span>{{ setting.autoCleanDays > 0 ? $t('autoCleanRetain', { days: setting.autoCleanDays }) : $t('disabled') }}</span>
                   <el-button class="opt-button" style="margin-top: 0" @click="openAutoClean" size="small"
                              type="primary">
-                    <Icon icon="fluent:settings-48-regular" width="16" height="16"/>
+                    <Icon icon="lucide:settings" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -239,7 +239,7 @@
                 <div class="forward">
                   <span>{{ setting.tgBotStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openTgSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -248,7 +248,7 @@
                 <div class="forward">
                   <span>{{ setting.forwardStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openThirdEmailSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -257,7 +257,7 @@
                 <div class="forward">
                   <span>{{ setting.webhookStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openWebhookSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -266,7 +266,7 @@
                 <div class="forward">
                   <span>{{ setting.ruleType === 0 ? $t('forwardAll') : $t('rules') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openForwardRules">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -281,13 +281,13 @@
                 <div>
                   <span>{{ $t('osDomain') }}</span>
                   <el-tooltip effect="dark" :content="$t('ossDomainDesc')">
-                    <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                    <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
                   </el-tooltip>
                 </div>
                 <div class="r2domain">
                   <span>{{ setting.r2Domain || '' }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="r2DomainShow = true">
-                    <Icon icon="lsicon:edit-outline" width="16" height="16"/>
+                    <Icon icon="lucide:pencil" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -297,7 +297,7 @@
                 </div>
                 <div class="r2domain">
                   <el-button class="opt-button" size="small" type="primary" @click="addS3Show = true">
-                    <Icon icon="fluent:settings-48-regular" width="16" height="16"/>
+                    <Icon icon="lucide:settings" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -322,7 +322,7 @@
                 <div><span>{{ $t('signUpVerification') }}</span></div>
                 <div>
                   <el-button class="opt-button" size="small" type="primary" @click="openRegVerifyCount">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                   <el-select
                       @change="change"
@@ -341,7 +341,7 @@
                 <div><span>{{ $t('addEmailVerification') }}</span></div>
                 <div>
                   <el-button class="opt-button" size="small" type="primary" @click="openAddVerifyCount">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                   <el-select
                       @change="change"
@@ -361,7 +361,7 @@
                 <div class="bot-verify">
                   <span>{{ setting.siteKey }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="turnstileShow = true">
-                    <Icon icon="lsicon:edit-outline" width="16" height="16"/>
+                    <Icon icon="lucide:pencil" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -370,7 +370,7 @@
                 <div class="bot-verify">
                   <span> {{ setting.secretKey }} </span>
                   <el-button class="opt-button" size="small" type="primary" @click="turnstileShow = true">
-                    <Icon icon="lsicon:edit-outline" width="16" height="16"/>
+                    <Icon icon="lucide:pencil" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -385,7 +385,7 @@
                 <div class="forward">
                   <span>{{ setting.notice === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openNoticePopupSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -393,7 +393,7 @@
                 <div><span>{{ $t('popUp') }}</span></div>
                 <div class="forward">
                   <el-button class="opt-button" size="small" type="primary" @click="openNoticePopup">
-                    <Icon icon="mynaui:click-solid" width="18" height="18"/>
+                    <Icon icon="lucide:mouse-pointer-click" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -414,7 +414,7 @@
                 <div><span>{{ $t('codeRecognitionRules') }}</span></div>
                 <div class="forward">
                   <el-button class="opt-button" size="small" type="primary" @click="openAiCodeFilter">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -434,7 +434,7 @@
                 <div class="forward">
                   <span>{{ setting[p.key + 'Switch'] === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openOauthSetting(p)">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon icon="lucide:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -450,7 +450,7 @@
                   <el-button @click="jump('https://github.com/maillab/cloud-mail/releases')">
                     {{ currentVersion }}
                     <template #icon>
-                      <Icon icon="qlementine-icons:version-control-16" style="font-size: 20px" color="#1890FF"/>
+                      <Icon icon="lucide:git-branch" style="color: var(--cm-brand-strong); font-size: 20px"/>
                     </template>
                   </el-button>
                 </el-badge>
@@ -461,13 +461,13 @@
                   <el-button @click="jump('https://github.com/maillab/cloud-mail')">
                     Github
                     <template #icon>
-                      <Icon icon="codicon:github-inverted" width="22" height="22"/>
+                      <Icon icon="lucide:github" width="22" height="22"/>
                     </template>
                   </el-button>
                   <el-button @click="jump('https://t.me/cloud_mail_tg')">
                     Telegram
                     <template #icon>
-                      <Icon icon="logos:telegram" width="30" height="30"/>
+                      <Icon icon="lucide:send" width="30" height="30"/>
                     </template>
                   </el-button>
                 </div>
@@ -477,7 +477,7 @@
                 <el-button @click="jump('https://doc.skymail.ink/support.html')">
                   {{ t('supportDesc') }}
                   <template #icon>
-                    <Icon color="#79D6B5" icon="simple-icons:buymeacoffee" width="20" height="20"/>
+                    <Icon style="color: var(--cm-success)" icon="lucide:wallet" width="20" height="20"/>
                   </template>
                 </el-button>
               </div>
@@ -486,7 +486,7 @@
                 <el-button @click="jump('https://doc.skymail.ink')">
                   {{ t('document') }}
                   <template #icon>
-                    <Icon color="#79D6B5" icon="fluent-color:document-32" width="18" height="18"/>
+                    <Icon style="color: var(--cm-success)" icon="lucide:file-text" width="18" height="18"/>
                   </template>
                 </el-button>
               </div>
@@ -557,7 +557,7 @@
               <template #content>
                 <span>{{ $t('backgroundWarning') }}</span>
               </template>
-              <Icon class="title-icon  warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="title-icon  warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </span>
         </template>
@@ -589,7 +589,7 @@
           <div class="forward-head">
             <span class="forward-set-title">{{ $t('tgBot') }}</span>
             <el-tooltip effect="dark" :content="$t('tgBotDesc')">
-              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </div>
         </template>
@@ -650,7 +650,7 @@
           <div class="forward-head">
             <span class="forward-set-title">{{ $t('otherEmail') }}</span>
             <el-tooltip effect="dark" :content="$t('otherEmailDesc')">
-              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </div>
         </template>
@@ -677,7 +677,7 @@
           <div class="forward-head">
             <span class="forward-set-title">{{ $t('webhook') }}</span>
             <el-tooltip effect="dark" :content="$t('webhookDesc')">
-              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </div>
         </template>
@@ -701,7 +701,7 @@ Authorization: &lt;secret&gt;</pre>
             <div class="webhook-footer-right">
               <div class="webhook-format-title" @click="webhookFormatShow = !webhookFormatShow">
                 <span>{{ $t('webhookFormat') }}</span>
-                <Icon class="webhook-format-icon" :class="{ open: webhookFormatShow }" icon="mingcute:down-small-fill" width="18" height="18"/>
+                <Icon class="webhook-format-icon" :class="{ open: webhookFormatShow }" icon="lucide:chevron-down" width="18" height="18"/>
               </div>
               <el-button :loading="settingLoading" type="primary" @click="webhookSave">
                 {{ $t('save') }}
@@ -718,7 +718,7 @@ Authorization: &lt;secret&gt;</pre>
           <div class="forward-head">
             <span class="forward-set-title">{{ $t('forwardingRules') }}</span>
             <el-tooltip effect="dark" :content="$t('forwardingRulesDesc')">
-              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </div>
         </template>
@@ -846,7 +846,7 @@ Authorization: &lt;secret&gt;</pre>
             <div class="force-path-style-left">
               <span>ForcePathStyle</span>
               <el-tooltip effect="dark" :content="$t('forcePathStyleDesc')">
-                <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+                <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
               </el-tooltip>
             </div>
             <el-switch :before-change="beforeChange" :active-value="0" :inactive-value="1"
@@ -878,7 +878,7 @@ Authorization: &lt;secret&gt;</pre>
           <div class="forward-head">
             <span class="forward-set-title">{{ $t('blackList') }}</span>
             <el-tooltip effect="dark" :content="$t('blackListDesc')">
-              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </div>
         </template>
@@ -916,7 +916,7 @@ Authorization: &lt;secret&gt;</pre>
           <div class="forward-head">
             <span class="forward-set-title">{{ $t('codeRecognitionRules') }}</span>
             <el-tooltip effect="dark" :content="$t('codeRecognitionRulesDesc')">
-              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+              <Icon class="warning" icon="lucide:triangle-alert" width="18" height="18"/>
             </el-tooltip>
           </div>
         </template>
@@ -1008,8 +1008,8 @@ const turnstileForm = reactive({
 })
 
 const oauthPlatforms = [
-  { key: 'google', label: 'Google', icon: 'devicon:google', iconType: 'iconify' },
-  { key: 'github', label: 'GitHub', icon: 'codicon:github-inverted', iconType: 'iconify' },
+  { key: 'google', label: 'Google', icon: 'logos:google-icon', iconType: 'iconify' },
+  { key: 'github', label: 'GitHub', icon: 'lucide:github', iconType: 'iconify' },
   { key: 'linuxdo', label: 'LinuxDo', icon: '/image/linuxdo.webp', iconType: 'image' },
 ]
 const oauthSettingShow = ref(false)
@@ -1759,7 +1759,7 @@ function editSetting(settingForm, refreshStatus = true) {
 .settings-container {
   height: 100%;
   overflow: hidden;
-  background: var(--settings-page-background) !important;
+  background: var(--cm-canvas) !important;
   position: relative;
 
   .loading {
@@ -1798,7 +1798,6 @@ function editSetting(settingForm, refreshStatus = true) {
     min-height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
 }
 
@@ -1806,11 +1805,11 @@ function editSetting(settingForm, refreshStatus = true) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  gap: 20px;
+  padding: 18px var(--cm-page-pad-x) 32px;
+  gap: 14px;
   @media (max-width: 1023px) {
-    gap: 15px;
-    padding: 15px;
+    gap: 12px;
+    padding: 12px;
   }
 }
 
@@ -1836,40 +1835,49 @@ function editSetting(settingForm, refreshStatus = true) {
 }
 
 .settings-card {
-  background-color: var(--el-bg-color);
-  border-radius: 6px;
-  border: 1px solid var(--el-border-color);
-  transition: all 300ms;
+  background-color: var(--cm-surface);
+  border-radius: var(--cm-radius);
+  border: 1px solid var(--cm-line);
+  transition: border-color 180ms ease, background-color 180ms ease;
   overflow: hidden;
-  max-width: 900px;
+  max-width: 1040px;
   width: 100%;
+  box-shadow: var(--cm-shadow-1);
 }
 
 
 .card-title {
-  font-size: 15px;
-  font-weight: bold;
-  padding: 15px 20px 12px;
-  border-bottom: 1px solid var(--el-border-color);
+  font-size: 14px;
+  font-weight: 620;
+  color: var(--cm-text);
+  padding: 15px 20px 13px;
+  border-bottom: 1px solid var(--cm-line);
+  background: var(--cm-surface-soft);
 }
 
 .card-content {
-  padding: 20px;
+  padding: 6px 20px 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
 }
 
 .setting-item {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 10px;
-  font-weight: normal;
+  gap: 14px;
+  font-size: 13.5px;
+  color: var(--cm-text-2);
+  min-height: 52px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--cm-line);
+  &:last-child { border-bottom: 0; }
 
   > div:first-child {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    min-width: 0;
   }
 
   > div:last-child {
@@ -1918,7 +1926,7 @@ function editSetting(settingForm, refreshStatus = true) {
 
 .cropper {
   border-radius: 4px;
-  border: 1px solid #D4D7DE;
+  border: 1px solid var(--cm-line-strong);
   height: 397px;
   width: 705px;
   @media (max-width: 767px) {

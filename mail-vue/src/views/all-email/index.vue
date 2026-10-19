@@ -18,7 +18,7 @@
                  :type="'all-email'"
 
     >
-      <template #first>
+      <template #filters>
         <el-input
             v-model="searchValue"
             :placeholder="$t('searchByContent')"
@@ -39,24 +39,30 @@
               </el-select>
               <div class="search-type">
                 <span>{{ selectTitle }}</span>
-                <Icon class="setting-icon" icon="mingcute:down-small-fill" width="20" height="20"/>
+                <Icon icon="lucide:chevron-down" width="14" height="14"/>
               </div>
             </div>
           </template>
         </el-input>
-        <el-select v-model="params.type" placeholder="Select" class="status-select" @change="typeSelectChange">
+        <el-select v-model="params.type" class="status-select" @change="typeSelectChange">
           <el-option key="1" :label="$t('all')" value="all"/>
           <el-option key="3" :label="$t('received')" value="receive"/>
           <el-option key="2" :label="$t('sent')" value="send"/>
           <el-option key="4" :label="$t('selectDeleted')" value="delete"/>
           <el-option key="4" :label="$t('noRecipientTitle')" value="noone"/>
         </el-select>
-        <Icon class="icon" icon="iconoir:search" @click="search" width="20" height="20"/>
-        <Icon class="icon" @click="changeTimeSort" icon="material-symbols-light:timer-arrow-down-outline"
-              v-if="params.timeSort === 0" width="28" height="28"/>
-        <Icon class="icon" @click="changeTimeSort" icon="material-symbols-light:timer-arrow-up-outline" v-else
-              width="28" height="28"/>
-        <Icon class="icon clear" icon="fluent:broom-sparkle-16-regular" width="22" height="22" @click="openBathDelete"/>
+        <button class="cm-icon-btn" type="button" :title="$t('search')" @click="search">
+          <Icon icon="lucide:search" width="16" height="16"/>
+        </button>
+      </template>
+      <template #first>
+        <button class="cm-icon-btn" type="button" :title="$t('sort')" @click="changeTimeSort">
+          <Icon :icon="params.timeSort === 0 ? 'lucide:arrow-down' : 'lucide:arrow-up'"
+                width="16" height="16"/>
+        </button>
+        <button class="cm-icon-btn is-danger" type="button" :title="$t('clearEmail')" @click="openBathDelete">
+          <Icon icon="lucide:eraser" width="16" height="16"/>
+        </button>
       </template>
     </emailScroll>
     <el-dialog v-model="showBathDelete" :title="$t('clearEmail')" width="335"
@@ -401,6 +407,8 @@ async function latest() {
   overflow: hidden;
 }
 
+:deep(.el-select__wrapper) { min-height: 34px; }
+
 
 .search {
   padding-top: 5px;
@@ -416,7 +424,14 @@ async function latest() {
 
 .search-type {
   display: flex;
-  color: var(--el-text-color-regular);
+  align-items: center;
+  gap: 2px;
+  font-size: 12.5px;
+  color: var(--cm-text-2);
+  padding-right: 10px;
+  margin-right: 2px;
+  border-right: 1px solid var(--cm-line);
+  cursor: pointer;
 }
 
 :deep(.header-actions) {
@@ -425,14 +440,7 @@ async function latest() {
 }
 
 .search-input {
-  width: 100%;
-  max-width: 280px;
-  height: 28px;
-
-  .setting-icon {
-    position: relative;
-    top: 3px;
-  }
+  width: min(300px, 46vw);
 }
 
 .clear-email {
@@ -452,12 +460,7 @@ async function latest() {
 }
 
 .status-select {
-  margin-bottom: 2px;
-  width: 102px;
-
-  :deep(.el-select__wrapper) {
-    min-height: 28px;
-  }
+  width: 116px;
 }
 
 .input-with-select {

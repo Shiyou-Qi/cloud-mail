@@ -3,16 +3,17 @@
     <div class="write-box">
       <div class="title">
         <div class="title-left">
-          <span class="title-text">
-            <Icon icon="hugeicons:quill-write-01" width="28" height="28"/>
+          <span class="compose-mark">
+            <Icon icon="lucide:pen-line" width="15" height="15"/>
           </span>
-          <span class="sender">{{ $t('sender') }}:</span>
-          <span class="sender-name">{{ form.name }}</span>
-          <span class="send-email"><{{ form.sendEmail }}></span>
+          <div class="compose-meta">
+            <span class="compose-label">{{ $t('compose') }}</span>
+            <span class="compose-from">{{ form.name }} <em>&lt;{{ form.sendEmail }}&gt;</em></span>
+          </div>
         </div>
-        <div @click="close" style="cursor: pointer;">
-          <Icon icon="material-symbols-light:close-rounded" width="22" height="22"/>
-        </div>
+        <button class="close-btn" type="button" :title="$t('close')" @click="close">
+          <Icon icon="lucide:x" width="17" height="17"/>
+        </button>
       </div>
       <div class="container">
         <el-input-tag  @add-tag="addTagChange" tag-type="primary" @input="inputChange" size="default" v-model="form.receiveEmail" >
@@ -33,38 +34,38 @@
                   :key="item"
                   :label="item"
                   :value="item"
-                  style="color: #999896;"
+                  class="write-hint"
               />
             </el-select>
           </template>
           <template #suffix>
             <div style="display: flex;margin-right: 3px;">
-              <Icon icon="fa7-solid:user-plus" width="20" height="20" class="add-contact" @click.stop="openContacts" />
+              <Icon icon="lucide:user-plus" width="20" height="20" class="add-contact" @click.stop="openContacts" />
             </div>
           </template>
         </el-input-tag>
         <el-input v-model="form.subject" :placeholder="t('subject')" />
         <tinyEditor :def-value="defValue" ref="editor" @change="change" @focus="focusChange" />
         <div class="button-item">
-          <div class="att-add" @click="chooseFile">
-            <Icon icon="iconamoon:attachment-fill" width="24" height="24"/>
+          <div class="att-add" @click="chooseFile" :title="$t('attachments')">
+            <Icon icon="lucide:paperclip" width="18" height="18"/>
           </div>
-          <div class="att-clear" @click="clearContent">
-            <Icon icon="icon-park-outline:clear-format" width="24" height="24 "/>
+          <div class="att-clear" @click="clearContent" :title="$t('clearFormat')">
+            <Icon icon="lucide:eraser" width="18" height="18"/>
           </div>
           <div class="att-list">
             <div class="att-item" v-for="(item,index) in form.attachments" :key="index">
               <Icon v-bind="getIconByName(item.filename)"/>
               <span class="att-filename">{{ item.filename }}</span>
               <span class="att-size">{{ formatBytes(item.size) }}</span>
-              <Icon style="cursor: pointer;" icon="material-symbols-light:close-rounded" @click="delAtt(index)"
+              <Icon style="cursor: pointer;" icon="lucide:x" @click="delAtt(index)"
                     width="22" height="22"/>
             </div>
           </div>
-          <div>
-            <el-button type="primary" @click="sendEmail" v-if="form.sendType === 'reply'">{{ $t('reply') }}</el-button>
-            <el-button type="primary" @click="sendEmail" v-else-if="form.sendType === 'forward'">{{ $t('forward') }}</el-button>
-            <el-button type="primary" @click="sendEmail" v-else>{{ $t('send') }}</el-button>
+          <div class="send-actions">
+            <el-button type="primary" is-brand @click="sendEmail" v-if="form.sendType === 'reply'">{{ $t('reply') }}</el-button>
+            <el-button type="primary" is-brand @click="sendEmail" v-else-if="form.sendType === 'forward'">{{ $t('forward') }}</el-button>
+            <el-button type="primary" is-brand @click="sendEmail" v-else>{{ $t('send') }}</el-button>
           </div>
         </div>
       </div>
@@ -80,7 +81,7 @@
         <el-table-column width="55" label="" >
           <template #default>
             <div style="display: flex;">
-              <Icon icon="mage:user" style="color: var(--el-text-color-primary)" width="22" height="22" color="#606266" />
+              <Icon icon="lucide:user" width="20" height="20" style="color: var(--cm-text-3)"/>
             </div>
           </template>
         </el-table-column>
@@ -619,130 +620,190 @@ function close() {
 <style scoped lang="scss">
 .send {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  background: var(--cm-overlay);
+  backdrop-filter: blur(2px);
 
   .write-box {
-    background: var(--el-bg-color);
-    width: min(1367px, calc(100% - 80px));
-    box-shadow: var(--el-box-shadow-light);
-    border: 1px solid var(--el-border-color-light);
-    transition: var(--el-transition-duration);
-    padding: 15px;
-    border-radius: 8px;
+    background: var(--cm-surface);
+    width: min(1040px, 100%);
+    height: min(780px, calc(100vh - 48px));
     display: grid;
     grid-template-rows: auto 1fr;
     overflow: hidden;
+    border-radius: var(--cm-radius-lg);
+    border: 1px solid var(--cm-line);
+    box-shadow: var(--cm-shadow-2);
+
     @media (max-width: 1024px) {
       width: 100%;
       height: 100%;
       border-radius: 0;
       border: 0;
-      padding-top: 10px;
-    }
-
-    @media (min-width: 1025px) {
-      height: min(800px, calc(100vh - 60px));
     }
 
     .title {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      gap: 12px;
+      padding: 14px 16px 14px 18px;
+      border-bottom: 1px solid var(--cm-line);
+    }
 
-      .title-left {
-        align-items: center;
-        display: grid;
-        grid-template-columns: auto auto auto 1fr;
-      }
+    .title-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
 
-      .title-text {
-      }
+    .compose-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: var(--cm-brand-soft);
+      color: var(--cm-brand-strong);
+      flex: 0 0 28px;
+    }
 
-      .sender {
-        margin-left: 8px;
-      }
+    .compose-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.3;
+      min-width: 0;
+    }
 
-      .sender-name {
-        margin-left: 8px;
-        font-weight: bold;
-      }
+    .compose-label {
+      font-size: 13.5px;
+      font-weight: 620;
+      color: var(--cm-text);
+    }
 
-      .send-email {
-        color: #999896;
-        margin-left: 5px;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
+    .compose-from {
+      font-size: 11.5px;
+      color: var(--cm-text-3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
+      em { font-style: normal; opacity: .8; }
+    }
 
-      div {
-        display: flex;
-        align-items: center;
-      }
+    .close-btn {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--cm-text-3);
+      cursor: pointer;
+      flex: 0 0 30px;
+
+      &:hover { background: var(--cm-surface-soft); color: var(--cm-text); }
     }
 
     .container {
       height: 100%;
+      min-height: 0;
       display: grid;
       grid-template-rows: auto auto 1fr auto;
-      gap: 15px;
+      gap: 10px;
+      padding: 14px 16px 16px;
+      overflow: hidden;
 
       .item-title {
+        font-size: 12.5px;
+        color: var(--cm-text-3);
+        padding-right: 8px;
+        border-right: 1px solid var(--cm-line);
+        margin-right: 8px;
       }
 
       .button-item {
-        display: grid;
-        grid-template-columns: auto auto 1fr auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--cm-line);
 
-        .att-add {
-          cursor: pointer;
-        }
-
+        .att-add,
         .att-clear {
+          width: 32px;
+          height: 32px;
+          display: grid;
+          place-items: center;
+          border-radius: 8px;
+          color: var(--cm-text-3);
           cursor: pointer;
-          margin-left: 10px;
+
+          &:hover { background: var(--cm-surface-soft); color: var(--cm-text); }
         }
 
         .att-list {
-          display: grid;
-          gap: 5px;
-          grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-          padding-left: 10px;
-          padding-right: 10px;
-          max-height: 110px;
+          flex: 1;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          max-height: 76px;
           overflow-y: auto;
-          @media (max-width: 450px) {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-          }
+          min-width: 0;
 
           .att-item {
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            gap: 5px;
-            height: 32px;
-            font-size: 14px;
-            padding: 4px 5px;
-            background: var(--light-ill);
-            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 30px;
+            font-size: 12.5px;
+            padding: 0 8px;
+            background: var(--cm-surface-soft);
+            border: 1px solid var(--cm-line);
+            border-radius: 8px;
+            max-width: 240px;
+
             .att-filename {
               white-space: nowrap;
               text-overflow: ellipsis;
               overflow: hidden;
+              min-width: 0;
             }
+
+            .att-size { color: var(--cm-text-3); font-size: 11.5px; }
           }
+        }
+
+        .send-actions { margin-left: auto; }
+
+        .el-button {
+          height: 34px;
+          padding: 0 18px;
+          border-radius: 9px;
         }
       }
     }
-  }
 
+    :deep(.el-input__wrapper) { min-height: 34px; }
+
+    :deep(.tox-tinymce) {
+      border-radius: 10px !important;
+      border: 1px solid var(--cm-line) !important;
+      overflow: hidden;
+    }
+
+    :deep(.tox .tox-editor-header) { box-shadow: none !important; }
+    :deep(.tox .tox-toolbar-overlord),
+    :deep(.tox .tox-toolbar__primary) { background: var(--cm-surface-soft) !important; }
+  }
 }
+
+.write-hint { color: var(--cm-text-3); font-size: 12.5px; }
 
 .email-row {
   white-space: nowrap;
@@ -765,9 +826,7 @@ function close() {
   margin-top: 10px;
 }
 
-.add-contact {
-  color: var(--regular-text-color)
-}
+.add-contact { color: var(--cm-text-3); cursor: pointer; &:hover { color: var(--cm-text); } }
 
 .write-select {
   position: absolute;
@@ -778,11 +837,7 @@ function close() {
   pointer-events: none;
 }
 
-:deep(.el-input-tag__suffix) {
-  padding-right: 4px;
-}
+:deep(.el-input-tag__suffix) { padding-right: 4px; }
 
-.icon {
-  cursor: pointer;
-}
+.icon { cursor: pointer; }
 </style>

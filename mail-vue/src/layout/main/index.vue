@@ -101,80 +101,72 @@ const handleResize = () => {
 
 </script>
 <style lang="scss" scoped>
+.main-box-show,
+.main-box-hide {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+}
+
+.main-box-show { grid-template-columns: var(--cm-account-w) 1fr; }
+
+.main-box-hide { grid-template-columns: 1fr; }
+
+@media (max-width: 767px) {
+  .main-box-show { grid-template-columns: 1fr; }
+}
+
+.main-view {
+  background: var(--cm-canvas);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
 
 .block-show {
   position: fixed;
+
   @media (max-width: 767px) {
     position: absolute;
-    right: 0;
-    border: 0;
+    inset: 0;
     height: 100%;
     width: 100%;
-    background: #000000;
-    opacity: 0.6;
+    background: var(--cm-overlay);
     z-index: 10;
-    transition: all 300ms;
+    transition: opacity 200ms ease;
   }
 }
 
 .block-hide {
   position: fixed;
   pointer-events: none;
-  transition: all 300ms;
+  transition: opacity 200ms ease;
 }
 
 .show {
-  transition: all 100ms;
+  transition: transform 180ms ease;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+
   @media (max-width: 767px) {
     position: fixed;
     z-index: 100;
     width: 260px;
+    box-shadow: var(--cm-shadow-2);
   }
 }
 
 .hide {
-  transition: all 100ms;
+  transition: transform 180ms ease;
   position: fixed;
   transform: translateX(-100%);
   opacity: 0;
+  height: 100%;
+
   @media (max-width: 1024px) {
     width: 260px;
     z-index: 100;
-  }
-}
-
-
-.main-box-show {
-  display: grid;
-  grid-template-columns: 260px  1fr;
-  height: calc(100% - 60px);
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.main-box-hide {
-  display: grid;
-  grid-template-columns: 1fr;
-  height: calc(100% - 60px);
-}
-
-
-.main-view {
-  background: var(--el-bg-color);
-}
-
-
-.navigation {
-  height: 30px;
-  border-bottom: solid 1px var(--el-menu-border-color);
-  display: inline-flex;
-  justify-items: center;
-  align-items: center;
-  width: 100%;
-  .tag {
-    background: var(--el-bg-color);
-    margin-left: 5px;
   }
 }
 </style>

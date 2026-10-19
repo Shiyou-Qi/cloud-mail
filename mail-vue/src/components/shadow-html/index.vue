@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 const props = defineProps({
   html: {
@@ -17,6 +17,8 @@ const props = defineProps({
 const container = ref(null)
 const contentBox = ref(null)
 let shadowRoot = null
+let observer = null
+let lastBoxWidth = 0
 
 function updateContent() {
   if (!shadowRoot) return;
@@ -34,8 +36,8 @@ function updateContent() {
     <style>
       :host {
         all: initial;
+        display: block;
         width: 100%;
-        height: 100%;
         font-family: Inter, 'Helvetica Neue', Helvetica, 'PingFang SC',
                     'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
         font-size: 14px;
@@ -49,6 +51,10 @@ function updateContent() {
           font-weight: 700;
       }
 
+      img { max-width: 100% !important; height: auto !important; }
+
+      table { max-width: 100% !important; }
+
       p {
         margin: 0;
       }
@@ -59,10 +65,11 @@ function updateContent() {
       }
 
       .shadow-content {
-        background: #FFFFFF;
-        width: fit-content;
-        height: fit-content;
+        background: transparent;
+        width: auto;
+        max-width: 100%;
         min-width: 100%;
+        overflow-wrap: break-word;
         ${bodyStyle ? bodyStyle : ''} /* 注入 body 的 style */
       }
 
@@ -76,6 +83,11 @@ function updateContent() {
       ${cleanedHtml}
     </div>
   `;
+
+  // 图片加载完成后重新量一次宽度，避免宽图把正文撑出滚动条
+  shadowRoot.querySelectorAll('img').forEach(img => {
+    if (!img.complete) img.addEventListener('load', () => autoScale(), {once: true})
+  })
 }
 
 function autoScale() {
@@ -83,24 +95,40 @@ function autoScale() {
 
   const parent = contentBox.value
   const shadowContent = shadowRoot.querySelector('.shadow-content')
+  const host = shadowRoot.host
 
   if (!shadowContent) return
+
+  // 先复位，避免上一次的缩放影响测量结果
+  host.style.zoom = ''
 
   const parentWidth = parent.offsetWidth
   const childWidth = shadowContent.scrollWidth
 
-  if (childWidth === 0) return
+  if (!parentWidth || !childWidth) return
 
-  const scale = parentWidth / childWidth
-
-  const hostElement = shadowRoot.host
-  hostElement.style.zoom = scale
+  // 只缩小超宽邮件（如固定 600px 宽的营销邮件），不做放大
+  const scale = Math.min(1, parentWidth / childWidth)
+  host.style.zoom = scale < 1 ? String(scale) : ''
 }
 
 onMounted(() => {
   shadowRoot = container.value.attachShadow({ mode: 'open' })
   updateContent()
   autoScale()
+
+  observer = new ResizeObserver(() => {
+    const width = contentBox.value?.offsetWidth || 0
+    if (!width || width === lastBoxWidth) return
+    lastBoxWidth = width
+    autoScale()
+  })
+  observer.observe(contentBox.value)
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  observer = null
 })
 
 watch(() => props.html, () => {
@@ -112,13 +140,11 @@ watch(() => props.html, () => {
 <style scoped>
 .content-box {
   width: 100%;
-  height: 100%;
   overflow: hidden;
   font-family: Inter, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
 }
 
 .content-html {
   width: 100%;
-  height: 100%;
 }
 </style>

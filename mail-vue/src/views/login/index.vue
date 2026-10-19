@@ -1,18 +1,34 @@
 <template>
-  <div id="login-box" :style=" background ? 'background: var(--el-bg-color)' : ''" v-loading="oauthLoading" element-loading-text="登录中...">
-    <div id="background-wrap" v-if="!settingStore.settings.background">
-      <div class="x1 cloud"></div>
-      <div class="x2 cloud"></div>
-      <div class="x3 cloud"></div>
-      <div class="x4 cloud"></div>
-      <div class="x5 cloud"></div>
-    </div>
-    <div v-else :style="background"></div>
-    <div class="form-wrapper">
+  <div id="login-box" class="login-page" v-loading="oauthLoading" element-loading-text="登录中..."
+       :class="{ 'has-background': !!settingStore.settings.background }">
+    <div class="login-bg" v-if="settingStore.settings.background" :style="background"></div>
+    <div class="login-glow" v-else></div>
+
+    <main class="login-hero">
+      <div class="hero-brand">
+        <span class="hero-mark">
+          <Icon icon="lucide:mail" width="18" height="18"/>
+        </span>
+        <span class="hero-name">{{ settingStore.settings.title }}</span>
+      </div>
+
+      <h1 class="hero-title">{{ $t('heroTitle') }}</h1>
+      <p class="hero-desc">{{ $t('heroDesc') }}</p>
+
+      <ul class="hero-points">
+        <li><Icon icon="lucide:inbox" width="15" height="15"/><span>{{ $t('heroPoint1') }}</span></li>
+        <li><Icon icon="lucide:paperclip" width="15" height="15"/><span>{{ $t('heroPoint2') }}</span></li>
+        <li><Icon icon="lucide:users" width="15" height="15"/><span>{{ $t('heroPoint3') }}</span></li>
+      </ul>
+    </main>
+
+    <section class="login-panel">
       <div class="container">
-        <span class="form-title">{{ settingStore.settings.title }}</span>
-        <span class="form-desc" v-if="show === 'login'">{{ $t('loginTitle') }}</span>
-        <span class="form-desc" v-else>{{ $t('regTitle') }}</span>
+        <div class="form-head">
+          <h2 class="form-title">{{ show === 'login' ? $t('loginTitle') : $t('regTitle') }}</h2>
+          <p class="form-desc">{{ show === 'login' ? $t('loginSubtitle') : $t('regSubtitle') }}</p>
+        </div>
+
         <div v-show="show === 'login'">
           <el-input :class="!hideLoginDomain ? 'email-input' : ''" v-model="form.email"
                     type="text" :placeholder="$t('emailAccount')" autocomplete="off" @keyup.enter="submit">
@@ -24,6 +40,7 @@
                     v-model="suffix"
                     :placeholder="$t('select')"
                     class="select"
+                    popper-class="login-domain-options"
                 >
                   <el-option
                       v-for="item in domainList"
@@ -32,14 +49,15 @@
                       :value="item"
                   />
                 </el-select>
-                <div style="color: var(--el-text-color-primary)">
-                  <span>{{ suffix }}</span>
-                  <Icon class="setting-icon" icon="mingcute:down-small-fill" width="20" height="20"/>
+                <div class="domain-suffix">
+                  <span>{{ suffix || domainList[0] }}</span>
+                  <Icon class="setting-icon" icon="lucide:chevron-down" width="20" height="20"/>
                 </div>
               </div>
             </template>
           </el-input>
-          <el-input v-model="form.password" :placeholder="$t('password')" type="password" autocomplete="off" @keyup.enter="submit">
+          <el-input v-model="form.password" :placeholder="$t('password')" type="password" show-password
+                    autocomplete="off" @keyup.enter="submit">
           </el-input>
           <el-button class="btn" type="primary" @click="submit" :loading="loginLoading"
           >{{ $t('loginBtn') }}
@@ -61,6 +79,7 @@
                     v-model="suffix"
                     :placeholder="$t('select')"
                     class="select"
+                    popper-class="login-domain-options"
                 >
                   <el-option
                       v-for="item in domainList"
@@ -70,14 +89,15 @@
                   />
                 </el-select>
                 <div>
-                  <span>{{ suffix }}</span>
-                  <Icon class="setting-icon" icon="mingcute:down-small-fill" width="20" height="20"/>
+                  <span>{{ suffix || domainList[0] }}</span>
+                  <Icon class="setting-icon" icon="lucide:chevron-down" width="20" height="20"/>
                 </div>
               </div>
             </template>
           </el-input>
-          <el-input v-model="registerForm.password" :placeholder="$t('password')" type="password" autocomplete="off" @keyup.enter="submitRegister"/>
-          <el-input v-model="registerForm.confirmPassword" :placeholder="$t('confirmPwd')" type="password"
+          <el-input v-model="registerForm.password" :placeholder="$t('password')" type="password" show-password
+                    autocomplete="off" @keyup.enter="submitRegister"/>
+          <el-input v-model="registerForm.confirmPassword" :placeholder="$t('confirmPwd')" type="password" show-password
                     autocomplete="off" @keyup.enter="submitRegister"/>
           <el-input v-if="settingStore.settings.regKey === 0" v-model="registerForm.code" :placeholder="$t('regKey')"
                     type="text" autocomplete="off" @keyup.enter="submitRegister"/>
@@ -108,8 +128,9 @@
           <div class="switch" @click="show = 'login'" v-else>{{ $t('hasAccount') }} <span>{{ $t('loginSwitch') }}</span>
           </div>
         </template>
-      </div>
-    </div>
+        </div>
+    </section>
+
     <el-dialog class="bind-dialog" v-model="showBindForm"  title="注册邮箱" >
       <div class="bind-container">
         <el-input :class="!hideLoginDomain ? 'email-input' : ''" v-model="bindForm.email" type="text" :placeholder="$t('emailAccount')" autocomplete="off" @keyup.enter="bind">
@@ -129,8 +150,8 @@
                 />
               </el-select>
               <div>
-                <span>{{ suffix }}</span>
-                <Icon class="setting-icon" icon="mingcute:down-small-fill" width="20" height="20"/>
+                <span>{{ suffix || domainList[0] }}</span>
+                <Icon class="setting-icon" icon="lucide:chevron-down" width="20" height="20"/>
               </div>
             </div>
           </template>
@@ -145,7 +166,7 @@
       </div>
     </el-dialog>
     <a v-show="settingStore.settings.projectLink" class="github" href="https://github.com/maillab/cloud-mail">
-      <Icon icon="mingcute:github-line" color="#1890ff" width="20" height="20" />
+      <Icon icon="lucide:github" color="#1890ff" width="20" height="20" />
     </a>
   </div>
 </template>
@@ -153,7 +174,7 @@
 <script setup>
 import router from "@/router";
 import {useRoute} from "vue-router";
-import {computed, nextTick, reactive, ref} from "vue";
+import {computed, nextTick, reactive, ref, watch} from "vue";
 import {login} from "@/request/login.js";
 import {register} from "@/request/login.js";
 import {websiteConfig} from "@/request/setting.js";
@@ -192,8 +213,8 @@ const oauthProvider = computed(() => {
 
 const oauthProviders = computed(() => {
   const allProviders = [
-    { key: 'google', label: 'Google', icon: 'devicon:google', iconType: 'iconify' },
-    { key: 'github', label: 'GitHub', icon: 'codicon:github-inverted', iconType: 'iconify' },
+    { key: 'google', label: 'Google', icon: 'logos:google-icon', iconType: 'iconify' },
+    { key: 'github', label: 'GitHub', icon: 'lucide:github', iconType: 'iconify' },
     { key: 'linuxdo', label: 'LinuxDo', icon: '/image/linuxdo.webp', iconType: 'image' },
   ]
   return allProviders.filter(p => settingStore.settings[p.key + 'Switch'] === 0)
@@ -218,9 +239,13 @@ const registerForm = reactive({
   confirmPassword: '',
   code: null
 })
-const domainList = settingStore.domainList;
+const domainList = computed(() => settingStore.domainList)
 const registerLoading = ref(false)
-suffix.value = domainList[0]
+suffix.value = domainList.value[0] || ''
+
+watch(domainList, (list) => {
+  if (!suffix.value && list?.length) suffix.value = list[0]
+}, {immediate: true})
 const verifyShow = ref(false)
 let verifyToken = ''
 let turnstileId = null
@@ -628,100 +653,265 @@ function submitRegister() {
     -webkit-text-security: disc !important;
   }
 }
+
+.login-domain-options .el-select-dropdown__wrap {
+  max-height: 188px !important;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.login-domain-options .el-select-dropdown__item {
+  min-height: 36px;
+}
 </style>
 
 <style lang="scss" scoped>
-
-.form-wrapper {
-  position: fixed;
-  right: 0;
+.login-page {
+  position: relative;
   height: 100%;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  @media (max-width: 767px) {
-    width: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr);
+  background: #070d12;
+  color: #e6eef4;
+  isolation: isolate;
+}
+
+.login-bg {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  z-index: -2;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 11, 16, .62);
   }
 }
 
-.container {
-  background: v-bind(loginOpacity);
-  padding-left: 40px;
-  padding-right: 40px;
+.login-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(900px 600px at 12% -10%, rgba(70, 191, 208, .20), transparent 60%),
+    radial-gradient(700px 520px at 78% 108%, rgba(48, 108, 148, .22), transparent 62%),
+    linear-gradient(160deg, #081016 0%, #0a131a 55%, #070d12 100%);
+}
+
+.login-hero {
+  align-self: center;
+  padding: 0 clamp(28px, 6vw, 96px);
+  max-width: 640px;
   display: flex;
   flex-direction: column;
+  gap: 0;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(28px, 6vh, 56px);
+}
+
+.hero-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #46bfd0;
+  color: #052a31;
+  box-shadow: 0 8px 24px -10px rgba(70, 191, 208, .9);
+}
+
+.hero-name {
+  font-size: 15px;
+  font-weight: 620;
+  letter-spacing: -.01em;
+  color: #e9f3f7;
+}
+
+.hero-title {
+  margin: 0;
+  max-width: 11em;
+  text-wrap: balance;
+  font-size: clamp(28px, 2.9vw, 40px);
+  line-height: 1.18;
+  font-weight: 680;
+  letter-spacing: -.03em;
+  color: #f2f8fb;
+}
+
+.hero-desc {
+  margin: 16px 0 0;
+  max-width: 26em;
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.8;
+  color: rgba(206, 224, 233, .72);
+  max-width: 30em;
+}
+
+.hero-points {
+  margin: 34px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: rgba(198, 218, 228, .8);
+
+    .iconify { color: #6cd3e1; }
+  }
+}
+
+.login-panel {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  width: 450px;
-  height: 100%;
-  border-left: 1px solid var(--login-border);
-  box-shadow: var(--el-box-shadow-light);
-  @media (max-width: 1024px) {
-    padding: 20px 18px;
-    width: 384px;
-    margin-left: 18px;
-  }
-  @media (max-width: 767px) {
-    border: 1px solid var(--login-border);
-    padding: 20px 18px;
-    border-radius: 6px;
-    height: fit-content;
-    width: 100%;
-    margin-right: 18px;
-    margin-left: 18px;
-  }
+  padding: 28px clamp(20px, 4vw, 56px);
+  background: rgba(9, 16, 22, .55);
+  border-left: 1px solid rgba(255, 255, 255, .06);
+  backdrop-filter: blur(18px);
+}
+
+.container {
+  width: min(400px, 100%);
+  display: flex;
+  flex-direction: column;
 
   .btn {
-    height: 36px;
+    height: 44px;
     width: 100%;
-    border-radius: 6px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .form-head { margin-bottom: 26px; }
+
+  .form-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 660;
+    letter-spacing: -.02em;
+    color: #f2f8fb;
   }
 
   .form-desc {
-    margin-top: 5px;
-    margin-bottom: 18px;
-    color: var(--form-desc-color);
-  }
-
-  .form-title {
-    font-weight: bold;
-    font-size: 22px !important;
+    margin: 7px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(190, 210, 220, .62);
   }
 
   .switch {
     margin-top: 20px;
     text-align: center;
+    font-size: 13px;
+    color: rgba(190, 210, 220, .6);
 
     span {
-      color: var(--login-switch-color);
+      color: #6cd3e1;
       cursor: pointer;
+      margin-left: 3px;
+
+      &:hover { text-decoration: underline; }
     }
-  }
-
-  :deep(.el-input__wrapper) {
-    border-radius: 6px;
-    background: var(--el-bg-color);
-  }
-
-  .email-input :deep(.el-input__wrapper) {
-    border-radius: 6px 0 0 6px;
-    background: var(--el-bg-color);
   }
 
   .el-input {
-    height: 38px;
+    height: 44px;
     width: 100%;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
+  }
 
-    :deep(.el-input__inner) {
-      height: 36px;
-    }
+  :deep(.el-input__wrapper) {
+    min-height: 44px;
+    padding: 0 13px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .04);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .1) inset;
+  }
+
+  :deep(.el-input__wrapper:hover) { box-shadow: 0 0 0 1px rgba(255, 255, 255, .2) inset; }
+
+  :deep(.el-input__wrapper.is-focus) {
+    box-shadow: 0 0 0 1px #46bfd0 inset, 0 0 0 3px rgba(70, 191, 208, .16);
+  }
+
+  :deep(.el-input__inner) { color: #e9f3f7; }
+
+  :deep(.el-input__inner::placeholder) { color: rgba(180, 202, 214, .45); }
+
+  .email-input :deep(.el-input__wrapper) { border-radius: 10px 0 0 10px; }
+
+  :deep(.el-input-group__append) {
+    padding: 0 !important;
+    padding-left: 10px !important;
+    padding-right: 8px !important;
+    background: rgba(255, 255, 255, .04);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .1) inset;
+    border-radius: 0 10px 10px 0;
+    color: #cfe3ea;
+  }
+
+  :deep(.el-button--primary) {
+    --el-button-text-color: #052a31;
+    --el-button-hover-text-color: #052a31;
+    --el-button-bg-color: #46bfd0;
+    --el-button-border-color: #46bfd0;
+    --el-button-hover-bg-color: #63ccdb;
+    --el-button-hover-border-color: #63ccdb;
+  }
+
+  :deep(.el-button + .el-button) { margin: 10px 0 0; }
+
+  :deep(.el-button:not(.el-button--primary)) {
+    background: rgba(255, 255, 255, .04);
+    border-color: rgba(255, 255, 255, .12);
+    color: #d7e7ee;
+
+    &:hover { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .2); }
   }
 }
 
-:deep(.el-select-dropdown__item) {
-  padding: 0 10px;
+.setting-icon { color: rgba(200, 220, 230, .6); }
+
+.domain-suffix {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #cfe3ea;
+  font-size: 13px;
 }
+
+.select {
+  position: absolute;
+  right: 26px;
+  width: 120px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.bind-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.register-turnstile { margin-bottom: 14px; }
 
 :deep(.bind-dialog) {
   width: 400px !important;
@@ -732,152 +922,49 @@ function submitRegister() {
   }
 }
 
-.bind-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
-}
-
-.setting-icon {
-  position: relative;
-  top: 6px;
-}
-
 .github {
   position: fixed;
-  width: 35px;
-  height: 35px;
+  width: 34px;
+  height: 34px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
-  background: var(--el-bg-color);
-  bottom: 10px;
-  right: 10px;
-  z-index: 1000;
-  border: 1px solid var(--el-border-color-light);
-  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+  bottom: 16px;
+  right: 16px;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #9fc4d2;
   cursor: pointer;
+
+  &:hover { background: rgba(255, 255, 255, .1); color: #e9f3f7; }
 }
 
-:deep(.el-input-group__append) {
-  padding: 0 !important;
-  padding-left: 8px !important;
-  padding-right: 4px !important;
-  background: var(--el-bg-color);
-  border-radius: 0 8px 8px 0;
-}
-
-:deep(.el-button+.el-button) {
-  margin: 0;
-}
-
-.register-turnstile {
-  margin-bottom: 18px;
-}
-
-.select {
-  position: absolute;
-  right: 30px;
-  width: 100px;
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.custom-style {
-  margin-bottom: 10px;
-}
-
-.custom-style .el-segmented {
-  --el-border-radius-base: 6px;
-  width: 180px;
-}
-
-
-#login-box {
-  background: linear-gradient(to bottom, #2980b9, #6dd5fa, #fff);
-  font: 100% Arial, sans-serif;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
-
-#background-wrap {
-  height: 100%;
-  z-index: 0;
-}
-
-@keyframes animateCloud {
-  0% {
-    margin-left: -500px;
+@media (max-width: 900px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    background: #070d12;
   }
 
-  100% {
-    margin-left: 100%;
+  .login-hero { display: none; }
+
+  .login-panel {
+    align-self: center;
+    background: transparent;
+    border-left: 0;
+    backdrop-filter: none;
+    padding: 20px;
+  }
+
+  .container {
+    width: min(420px, 100%);
+    padding: 26px 22px;
+    border-radius: 18px;
+    background: rgba(13, 21, 28, .82);
+    border: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .9);
+    backdrop-filter: blur(16px);
   }
 }
-
-.x1 {
-  animation: animateCloud 30s linear infinite;
-  transform: scale(0.65);
-}
-
-.x2 {
-  animation: animateCloud 15s linear infinite;
-  transform: scale(0.3);
-}
-
-.x3 {
-  animation: animateCloud 25s linear infinite;
-  transform: scale(0.5);
-}
-
-.x4 {
-  animation: animateCloud 13s linear infinite;
-  transform: scale(0.4);
-}
-
-.x5 {
-  animation: animateCloud 20s linear infinite;
-  transform: scale(0.55);
-}
-
-.cloud {
-  background: linear-gradient(to bottom, #fff 5%, #f1f1f1 100%);
-  border-radius: 100px;
-  box-shadow: 0 8px 5px rgba(0, 0, 0, 0.1);
-  height: 120px;
-  width: 350px;
-  position: relative;
-}
-
-.cloud:after,
-.cloud:before {
-  content: "";
-  position: absolute;
-  background: #fff;
-  z-index: -1;
-}
-
-.cloud:after {
-  border-radius: 100px;
-  height: 100px;
-  left: 50px;
-  top: -50px;
-  width: 100px;
-}
-
-.cloud:before {
-  border-radius: 200px;
-  height: 180px;
-  width: 180px;
-  right: 50px;
-  top: -90px;
-}
-
 </style>

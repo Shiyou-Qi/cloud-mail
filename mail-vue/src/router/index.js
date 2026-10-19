@@ -170,6 +170,11 @@ router.afterEach((to) => {
         uiStore.asideShow = false
     }
 
+    // 手机端不允许账号栏常驻（它是持久化的），避免遮挡正文
+    if (window.innerWidth <= 767) {
+        uiStore.accountShow = false
+    }
+
     first = false
 })
 

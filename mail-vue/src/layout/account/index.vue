@@ -1,130 +1,128 @@
 <template>
-  <div class="account-box">
-    <div class="head-opt">
-      <Icon v-perm="'account:add'" class="icon add" icon="ion:add-outline" width="23" height="23" @click="add"/>
-      <Icon class="icon refresh" icon="ion:reload" width="18" height="18" @click="refresh"/>
-    </div>
-    <el-scrollbar class="scrollbar" ref="scrollbarRef">
-      <div v-infinite-scroll="getAccountList" :infinite-scroll-distance="600" :infinite-scroll-immediate="false">
-        <el-card class="item" :class="itemBg(item.accountId)" v-for="(item, index) in accounts" :key="item.accountId"
-                 @click="changeAccount(item)">
-          <div class="account">
-            {{ item.email }}
-          </div>
-          <div class="opt">
-            <div class="send-email" @click.stop>
-              <Icon @click="setAllReceive(item)" v-if="!item.allReceive" icon="eva:email-fill" width="22" height="22" color="#fccb1a"/>
-              <Icon @click="setAllReceive(item)" v-else icon="flat-color-icons:folder" width="22" height="22" color="#23c4f1" />
-            </div>
-            <div class="settings" @click.stop>
-              <Icon icon="fluent-color:clipboard-24" width="22" height="22" @click.stop="copyAccount(item.email)"/>
-              <Icon icon="fluent:settings-24-filled" width="21" height="21" color="#909399"
-                    v-if="showNullSetting(item)"/>
-              <el-dropdown v-else>
-                <Icon icon="fluent:settings-24-filled" width="21" height="21" color="#909399"/>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item v-if="hasPerm('email:send')" @click="openSetName(item)">{{ $t('rename') }}</el-dropdown-item>
-                    <el-dropdown-item v-if="item.accountId !== userStore.user.account.accountId" @click="setAsTop(item, index)">{{ $t('pin') }}</el-dropdown-item>
-                    <el-dropdown-item v-if="item.accountId !== userStore.user.account.accountId && hasPerm('account:delete')"
-                                      @click="remove(item)">{{ $t('delete') }}
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </div>
-          </div>
-        </el-card>
-
-        <!-- Initial Loading Skeleton -->
-        <template v-if="loading">
-          <el-skeleton v-for="i in skeletonRows" :key="i" animated>
-            <template #template>
-              <el-card class="item">
-                <el-skeleton-item variant="p" style="width: 70%; height: 20px; margin-bottom: 25px"/>
-                <div style="display: flex; justify-content: space-between">
-                  <el-skeleton-item variant="text" style="width: 20px"/>
-                  <el-skeleton-item variant="text" style="width: 20px"/>
-                </div>
-              </el-card>
-            </template>
-          </el-skeleton>
-        </template>
-
-        <!-- Follow Loading Skeleton -->
-        <template v-if="accounts.length > 0 && !noLoading">
-          <el-skeleton animated>
-            <template #template>
-              <el-card class="item">
-                <el-skeleton-item variant="p" style="width: 70%; height: 20px; margin-bottom: 20px"/>
-                <div style="display: flex; justify-content: space-between">
-                  <el-skeleton-item variant="text" style="width: 20px"/>
-                  <el-skeleton-item variant="text" style="width: 20px"/>
-                </div>
-              </el-card>
-            </template>
-          </el-skeleton>
-        </template>
-
-        <div class="noLoading" v-if="noLoading && accounts.length > 0">
-          <div>{{ $t('noMoreData') }}</div>
-        </div>
-        <div class="empty" v-if="noLoading && accounts.length === 0">
-          <el-empty :description="$t('noMessagesFound')"/>
-        </div>
+  <div class="account-panel">
+    <div class="panel-head">
+      <span class="panel-title">{{ $t('mailboxes') }}</span>
+      <span class="panel-count" v-if="accounts.length">{{ accounts.length }}</span>
+      <div class="panel-actions">
+        <button v-perm="'account:add'" class="cm-icon-btn" type="button" :title="$t('addAccount')" @click="add">
+          <Icon icon="lucide:plus" width="17" height="17"/>
+        </button>
+        <button class="cm-icon-btn" type="button" :title="$t('refresh')" @click="refresh">
+          <Icon icon="lucide:refresh-cw" width="15" height="15"/>
+        </button>
       </div>
+    </div>
 
+    <el-scrollbar class="panel-scroll" ref="scrollbarRef">
+      <div class="panel-list" v-infinite-scroll="getAccountList" :infinite-scroll-distance="600"
+           :infinite-scroll-immediate="false">
+
+        <div class="account-item"
+             :class="{ 'is-active': accountStore.currentAccountId === item.accountId }"
+             v-for="(item, index) in accounts" :key="item.accountId"
+             tabindex="0"
+             @click="changeAccount(item)"
+             @keydown.enter="changeAccount(item)">
+          <span class="item-avatar">{{ avatarText(item) }}</span>
+          <span class="item-main">
+            <span class="item-name">{{ item.name || item.email.split('@')[0] }}</span>
+            <span class="item-email">{{ item.email }}</span>
+          </span>
+          <span class="item-flag" v-if="item.allReceive === 1" :title="$t('receiveAll')">
+            <Icon icon="lucide:inbox" width="12" height="12"/>
+          </span>
+          <span class="item-actions" @click.stop>
+            <button class="mini-btn" type="button" :title="$t('copy')" @click="copyAccount(item.email)">
+              <Icon icon="lucide:copy" width="14" height="14"/>
+            </button>
+            <el-dropdown trigger="click" @command="cmd => onCommand(cmd, item, index)">
+              <button class="mini-btn" type="button" :title="$t('accountMenu')">
+                <Icon icon="lucide:settings" width="14" height="14"/>
+              </button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item v-if="hasPerm('email:send')" command="rename">
+                    <Icon icon="lucide:pencil" width="15" height="15"/>{{ $t('rename') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item command="receive">
+                    <Icon icon="lucide:inbox" width="15" height="15"/>{{ $t('receiveAll') }}
+                    <Icon v-if="item.allReceive === 1" class="menu-check" icon="lucide:check" width="14" height="14"/>
+                  </el-dropdown-item>
+                  <el-dropdown-item v-if="item.accountId !== userStore.user.account?.accountId" command="pin">
+                    <Icon icon="lucide:pin" width="15" height="15"/>{{ $t('pin') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item v-if="item.accountId !== userStore.user.account?.accountId && hasPerm('account:delete')"
+                                    command="delete" divided>
+                    <Icon icon="lucide:trash-2" width="15" height="15"/>{{ $t('delete') }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </span>
+        </div>
+
+        <template v-if="loading">
+          <div class="account-skeleton" v-for="i in (skeletonRows || 4)" :key="i">
+            <el-skeleton animated>
+              <template #template>
+                <div class="skeleton-row">
+                  <el-skeleton-item variant="rect" style="width: 28px; height: 28px; border-radius: 9px"/>
+                  <div class="skeleton-lines">
+                    <el-skeleton-item variant="text" style="width: 60%; height: 12px"/>
+                    <el-skeleton-item variant="text" style="width: 85%; height: 10px"/>
+                  </div>
+                </div>
+              </template>
+            </el-skeleton>
+          </div>
+        </template>
+
+        <div class="account-skeleton" v-if="accounts.length > 0 && !noLoading">
+          <el-skeleton animated :rows="1"/>
+        </div>
+
+        <div class="panel-empty" v-if="noLoading && accounts.length === 0">
+          <Icon icon="lucide:inbox" width="22" height="22"/>
+          <span>{{ $t('noMessagesFound') }}</span>
+        </div>
+        <div class="panel-end" v-if="noLoading && accounts.length >= 10">{{ $t('noMoreData') }}</div>
+      </div>
     </el-scrollbar>
-    <el-dialog v-model="showAdd" :title="$t('addAccount')">
-      <div class="container">
-        <el-input v-model="addForm.email" ref="addRef" type="text" :placeholder="$t('emailAccount')" autocomplete="off" @keyup.enter="submit">
+
+    <el-dialog v-model="showAdd" :title="$t('addAccount')" width="380px">
+      <div class="dialog-form">
+        <el-input v-model="addForm.email" ref="addRef" type="text" :placeholder="$t('emailAccount')"
+                  autocomplete="off" @keyup.enter="submit">
           <template #append>
-            <div @click.stop="openSelect">
-              <el-select
-                  ref="mySelect"
-                  v-model="addForm.suffix"
-                  :placeholder="$t('select')"
-                  class="select"
-              >
-                <el-option
-                    v-for="item in domainList"
-                    :key="item"
-                    :label="item"
-                    :value="item"
-                />
+            <div @click.stop="openSelect" class="suffix-picker">
+              <el-select ref="mySelect" v-model="addForm.suffix" :placeholder="$t('select')" class="select">
+                <el-option v-for="item in domainList" :key="item" :label="item" :value="item"/>
               </el-select>
-              <div>
-                <span>{{ addForm.suffix }}</span>
-                <Icon class="setting-icon" icon="mingcute:down-small-fill" width="20" height="20"/>
-              </div>
+              <span>{{ addForm.suffix }}</span>
+              <Icon icon="lucide:chevron-down" width="16" height="16"/>
             </div>
           </template>
         </el-input>
-        <el-button class="btn" type="primary" @click="submit" :loading="addLoading"
-        >{{ $t('add') }}
-        </el-button>
-      </div>
-      <div
-          class="add-email-turnstile"
-          :class="verifyShow ? 'turnstile-show' : 'turnstile-hide'"
-          :data-sitekey="settingStore.settings.siteKey"
-          data-callback="onTurnstileSuccess"
-          data-error-callback="onTurnstileError"
-      >
-        <span style="font-size: 12px;color: #F56C6C" v-if="botJsError">{{ $t('verifyModuleFailed') }}</span>
+        <div class="add-email-turnstile" :class="verifyShow ? 'turnstile-show' : 'turnstile-hide'"
+             :data-sitekey="settingStore.settings.siteKey"
+             data-callback="onTurnstileSuccess"
+             data-error-callback="onTurnstileError">
+          <span class="verify-error" v-if="botJsError">{{ $t('verifyModuleFailed') }}</span>
+        </div>
+        <el-button class="dialog-submit" type="primary" @click="submit" :loading="addLoading">{{ $t('add') }}</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-model="setNameShow" :title="$t('changeUserName')">
-      <div class="container">
-        <el-input v-model="accountName" type="text" :placeholder="$t('username')" autocomplete="off" @keyup.enter="setName">
-        </el-input>
-        <el-button class="btn" type="primary" @click="setName" :loading="setNameLoading"
-        >{{ $t('save') }}
-        </el-button>
+
+    <el-dialog v-model="setNameShow" :title="$t('changeUserName')" width="380px">
+      <div class="dialog-form">
+        <el-input v-model="accountName" type="text" :placeholder="$t('username')" autocomplete="off"
+                  @keyup.enter="setName"/>
+        <el-button class="dialog-submit" type="primary" @click="setName" :loading="setNameLoading">{{ $t('save') }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
+
 <script setup>
 import {Icon} from "@iconify/vue";
 import {computed, nextTick, reactive, ref, watch} from "vue";
@@ -296,6 +294,18 @@ function setAllReceive(account) {
 
 function showNullSetting(item) {
   return !hasPerm('email:send') && !(item.accountId !== userStore.user.account.accountId && hasPerm('account:delete'))
+}
+
+function avatarText(item) {
+  const src = item.name || item.email || '?'
+  return src.trim()[0]?.toUpperCase() || '?'
+}
+
+function onCommand(cmd, item, index) {
+  if (cmd === 'rename') openSetName(item)
+  else if (cmd === 'receive') setAllReceive(item)
+  else if (cmd === 'pin') setAsTop(item, index)
+  else if (cmd === 'delete') remove(item)
 }
 
 function itemBg(accountId) {
@@ -514,169 +524,220 @@ function submit() {
   })
 }
 </script>
-<style>
-path[fill="#ffdda1"] {
-  fill: #ffdd7d;
-}
-</style>
 <style scoped lang="scss">
-.account-box {
-
-  border-right: 1px solid var(--el-border-color) !important;
-  background-color: var(--el-bg-color);
+.account-panel {
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--cm-surface);
+  border-right: 1px solid var(--cm-line);
   overflow: hidden;
-
-  .head-opt {
-    display: flex;
-    align-items: center;
-    height: 38px;
-    box-shadow: var(--header-actions-border);
-    padding-left: 10px;
-    padding-right: 10px;
-
-    .icon {
-      cursor: pointer;
-    }
-
-    .refresh {
-      margin-left: 10px;
-    }
-
-    .add {
-      margin-left: 2px;
-    }
-
-    .head-opt:not(.add) .refresh {
-      margin-left: 5px;
-    }
-  }
-
-  .scrollbar {
-    width: 100%;
-    height: calc(100% - 38px);
-    overflow: auto;
-    @media (max-width: 767px) {
-      height: calc(100% - 98px);
-    }
-
-    .empty {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-    }
-
-    .noLoading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px 0;
-      color: var(--secondary-text-color);
-    }
-  }
-
-  .btn {
-    width: 100%;
-    margin-top: 15px;
-  }
-
-  .item {
-    background-color: var(--el-bg-color);
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 11px;
-    margin-left: 10px;
-    margin-right: 10px;
-    cursor: pointer;
-
-    .account {
-      font-weight: 400;
-      font-size: 15px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .opt {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: #888;
-
-      .settings {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .send-email {
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    :deep(.el-card__body) {
-      padding: 0;
-    }
-  }
-
-  .item:first-child {
-    margin-top: 10px;
-  }
-
-  .item-choose {
-    background: var(--choose-account-background);
-  }
 }
 
+.panel-head {
+  height: 48px;
+  flex: 0 0 48px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid var(--cm-line);
+}
 
-.setting-icon {
+.panel-title {
+  font-size: 12px;
+  font-weight: 620;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--cm-text-3);
+}
+
+.panel-count {
+  font-size: 11px;
+  font-weight: 620;
+  color: var(--cm-text-3);
+  background: var(--cm-surface-sunken);
+  border-radius: 999px;
+  padding: 1px 7px;
+  line-height: 16px;
+}
+
+.panel-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  .cm-icon-btn { width: 28px; height: 28px; }
+}
+
+.panel-scroll { flex: 1; min-height: 0; }
+
+.panel-list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  border-radius: 9px;
+  cursor: pointer;
   position: relative;
-  top: 6px;
-}
+  transition: background-color .14s ease;
+  outline: none;
 
-:deep(.el-input-group__append) {
-  padding: 0 !important;
-  padding-left: 8px !important;
-  background: var(--el-bg-color);
-}
+  &:hover { background: var(--cm-surface-soft); }
+  &:hover .item-email { color: var(--cm-text-2); }
 
-:deep(.el-dialog) {
-  width: 400px !important;
-  @media (max-width: 440px) {
-    width: calc(100% - 40px) !important;
-    margin-right: 20px !important;
-    margin-left: 20px !important;
+  &.is-active {
+    background: var(--cm-brand-soft);
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      bottom: 9px;
+      width: 2px;
+      border-radius: 0 2px 2px 0;
+      background: var(--cm-brand);
+    }
+    .item-name { color: var(--cm-brand-strong); }
   }
+}
+
+.item-avatar {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--cm-surface-sunken);
+  color: var(--cm-text-2);
+  font-size: 12px;
+  font-weight: 640;
+
+  .is-active & { background: var(--cm-surface); color: var(--cm-brand-strong); }
+}
+
+.item-main {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.item-name {
+  font-size: 13px;
+  font-weight: 540;
+  color: var(--cm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-email {
+  font-size: 11.5px;
+  color: var(--cm-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-flag {
+  flex: 0 0 auto;
+  color: var(--cm-brand-strong);
+  display: flex;
+  align-items: center;
+}
+
+.item-actions {
+  display: none;
+  align-items: center;
+  gap: 1px;
+  margin-left: 2px;
+}
+.account-item:hover .item-actions,
+.account-item:focus-within .item-actions { display: flex; }
+.account-item:hover .item-flag { display: none; }
+
+.mini-btn {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--cm-text-3);
+  cursor: pointer;
+  background: transparent;
+
+  &:hover { background: var(--cm-surface); color: var(--cm-text); }
+}
+
+:deep(.menu-check) { margin-left: auto; color: var(--cm-brand-strong); }
+
+.account-skeleton {
+  padding: 9px 8px;
+  .skeleton-row { display: flex; align-items: center; gap: 9px; }
+  .skeleton-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+}
+
+.panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px 12px;
+  color: var(--cm-text-3);
+  font-size: 12.5px;
+}
+
+.panel-end {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--cm-text-3);
+  padding: 10px 0 14px;
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dialog-submit { width: 100%; height: 38px; }
+
+.suffix-picker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--cm-text-2);
+  cursor: pointer;
 }
 
 .select {
   position: absolute;
-  right: 30px;
-  width: 100px;
+  right: 20px;
+  width: 120px;
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
 }
 
-:deep(.el-pagination .el-select) {
-  width: 100px;
-  background: var(--el-bg-color);
-}
+.verify-error { font-size: 12px; color: var(--cm-danger); }
 
-.add-email-turnstile {
-  margin-top: 15px;
-}
+.turnstile-show { margin-top: 2px; }
+.turnstile-hide { display: none; }
 
-.turnstile-show {
-  opacity: 1;
+@media (max-width: 767px) {
+  .account-panel { border-right: none; }
 }
-
-.turnstile-hide {
-  opacity: 0;
-  pointer-events: none;
-  position: fixed;
-}
-
 </style>

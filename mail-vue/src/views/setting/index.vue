@@ -1,65 +1,90 @@
 <template>
-  <div class="box">
-    <div class="container">
-      <div class="title">{{$t('profile')}}</div>
-      <div class="item">
-        <div>{{$t('username')}}</div>
-        <div>
-          <span v-if="setNameShow" class="edit-name-input">
-            <el-input v-model="accountName"  ></el-input>
-            <span class="edit-name" @click="setName">
-             {{$t('save')}}
-            </span>
-          </span>
-          <span v-else class="user-name">
-            <span >{{ userStore.user.name }}</span>
-            <span class="edit-name" @click="showSetName">
-             {{$t('change')}}
-            </span>
-          </span>
+  <div class="cm-page-scroll">
+    <div class="settings">
+
+      <section class="cm-surface section">
+        <header class="section-head">
+          <div>
+            <h2 class="section-title">{{ $t('profile') }}</h2>
+            <p class="section-desc">{{ $t('emailAccount') }} · {{ userStore.user.email }}</p>
+          </div>
+        </header>
+        <div class="rows">
+          <div class="row">
+            <div class="row-label">{{ $t('username') }}</div>
+            <div class="row-value">
+              <span v-if="setNameShow" class="edit-name-input">
+                <el-input v-model="accountName" @keyup.enter="setName"/>
+                <el-button type="primary" @click="setName">{{ $t('save') }}</el-button>
+              </span>
+              <span v-else class="user-name">
+                <span>{{ userStore.user.name }}</span>
+                <el-button text type="primary" @click="showSetName">{{ $t('change') }}</el-button>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="row-label">{{ $t('emailAccount') }}</div>
+            <div class="row-value mono">{{ userStore.user.email }}</div>
+          </div>
+          <div class="row">
+            <div class="row-label">{{ $t('password') }}</div>
+            <div class="row-value">
+              <el-button @click="pwdShow = true">{{ $t('changePwdBtn') }}</el-button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="item">
-        <div>{{$t('emailAccount')}}</div>
-        <div>{{ userStore.user.email }}</div>
-      </div>
-      <div class="item">
-        <div>{{$t('password')}}</div>
-        <div>
-          <el-button type="primary" @click="pwdShow = true">{{$t('changePwdBtn')}}</el-button>
+      </section>
+
+      <section class="cm-surface section">
+        <header class="section-head">
+          <div>
+            <h2 class="section-title">{{ $t('language') }}</h2>
+          </div>
+        </header>
+        <div class="rows">
+          <div class="row">
+            <div class="row-label">{{ $t('uiLanguage') }}</div>
+            <div class="row-value">
+              <el-select :model-value="langSelect" class="language-select" @change="changeLang">
+                <el-option label="中文" value="zh" @pointerdown.prevent.stop="changeLang('zh')"/>
+                <el-option label="English" value="en" @pointerdown.prevent.stop="changeLang('en')"/>
+              </el-select>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section class="cm-surface section is-danger" v-perm="'my:delete'">
+        <header class="section-head">
+          <div>
+            <h2 class="section-title">{{ $t('deleteUser') }}</h2>
+            <p class="section-desc">{{ $t('delAccountMsg') }}</p>
+          </div>
+        </header>
+        <div class="rows">
+          <div class="row">
+            <div class="row-label">{{ $t('delAccount') }}</div>
+            <div class="row-value">
+              <el-button type="danger" plain @click="deleteConfirm">{{ $t('deleteUserBtn') }}</el-button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-    <div class="language">
-      <div class="title">{{$t('language')}}</div>
-      <el-select
-          :model-value="langSelect"
-          class="language-select"
-          placeholder="Select"
-          @change="changeLang"
-      >
-        <el-option label="中文" value="zh" @pointerdown.prevent.stop="changeLang('zh')"/>
-        <el-option label="English" value="en" @pointerdown.prevent.stop="changeLang('en')"/>
-      </el-select>
-    </div>
-    <div class="del-email" v-perm="'my:delete'">
-      <div class="title">{{$t('deleteUser')}}</div>
-      <div style="color: var(--regular-text-color);">
-        {{$t('delAccountMsg')}}
-      </div>
-      <div>
-        <el-button type="primary" @click="deleteConfirm">{{$t('deleteUserBtn')}}</el-button>
-      </div>
-    </div>
-    <el-dialog v-model="pwdShow" :title="$t('changePassword')" width="340">
+
+    <el-dialog v-model="pwdShow" :title="$t('changePassword')" width="360">
       <div class="update-pwd">
-        <el-input type="password" :placeholder="$t('newPassword')" v-model="form.password" autocomplete="off" @keyup.enter="submitPwd"/>
-        <el-input type="password" :placeholder="$t('confirmPassword')" v-model="form.newPwd" autocomplete="off" @keyup.enter="submitPwd"/>
-        <el-button type="primary" :loading="setPwdLoading" @click="submitPwd">{{$t('save')}}</el-button>
+        <el-input type="password" show-password :placeholder="$t('newPassword')" v-model="form.password" autocomplete="off"
+                  @keyup.enter="submitPwd"/>
+        <el-input type="password" show-password :placeholder="$t('confirmPassword')" v-model="form.newPwd" autocomplete="off"
+                  @keyup.enter="submitPwd"/>
+        <el-button type="primary" :loading="setPwdLoading" @click="submitPwd">{{ $t('save') }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
+
 <script setup>
 import {reactive, ref, defineOptions} from 'vue'
 import {resetPassword, userDelete} from "@/request/my.js";
@@ -208,91 +233,93 @@ function submitPwd() {
 
 </script>
 <style scoped lang="scss">
-.box {
-  padding: 40px 40px;
+.settings {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  @media (max-width: 767px) {
-    padding: 30px 30px;
+.section {
+  overflow: hidden;
+}
+
+.section-head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--cm-line);
+}
+
+.section-title {
+  font-size: 14.5px;
+  font-weight: 620;
+  color: var(--cm-text);
+  margin: 0;
+}
+
+.section-desc {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--cm-text-3);
+  line-height: 1.5;
+}
+
+.rows { display: flex; flex-direction: column; }
+
+.row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  min-height: 54px;
+
+  & + .row { border-top: 1px solid var(--cm-line); }
+}
+
+.row-label {
+  font-size: 13px;
+  color: var(--cm-text-3);
+}
+
+.row-value {
+  font-size: 13.5px;
+  color: var(--cm-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  &.mono { font-variant-numeric: tabular-nums; }
+}
+
+.user-name { display: flex; align-items: center; gap: 10px; }
+
+.edit-name-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(360px, 100%);
+}
+
+.language-select { width: 160px; }
+
+.update-pwd {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .el-button { width: 100%; height: 38px; }
+}
+
+.section.is-danger .section-title { color: var(--cm-danger); }
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 16px;
   }
-
-  .update-pwd {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .title {
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .container {
-    font-size: 14px;
-    display: grid;
-    gap: 20px;
-    margin-bottom: 40px;
-
-    .item {
-      display: grid;
-      grid-template-columns: 50px 1fr;
-      gap: 140px;
-      position: relative;
-      .user-name {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        span:first-child {
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
-      }
-
-      .edit-name-input {
-        position: absolute;
-        bottom: -6px;
-        .el-input {
-          width: min(200px,calc(100vw - 222px));
-        }
-      }
-
-      .edit-name {
-        color: #4dabff;
-        padding-left: 10px;
-        cursor: pointer;
-      }
-
-      @media (max-width: 767px) {
-        gap: 70px;
-      }
-
-      div:first-child {
-        font-weight: bold;
-      }
-
-      div:last-child {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-
-  .language {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 40px;
-
-    .language-select {
-      width: 100px;
-    }
-  }
-
-  .del-email {
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  .section-head { padding: 14px 16px; }
 }
 </style>

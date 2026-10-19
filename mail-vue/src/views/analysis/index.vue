@@ -15,7 +15,7 @@
             </div>
             <div class="right">
               <div class="count-icon">
-                <Icon icon="hugeicons:mailbox-01" width="25" height="25"></Icon>
+                <Icon icon="lucide:inbox" width="25" height="25"></Icon>
               </div>
             </div>
           </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="right">
               <div class="count-icon">
-                <Icon icon="cil:send" width="25" height="25"></Icon>
+                <Icon icon="lucide:send" width="25" height="25"></Icon>
               </div>
             </div>
           </div>
@@ -53,7 +53,7 @@
             </div>
             <div class="right">
               <div class="count-icon">
-                <Icon icon="lets-icons:e-mail" width="23" height="23"></Icon>
+                <Icon icon="lucide:mail" width="23" height="23"></Icon>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
             </div>
             <div class="right">
               <div class="count-icon">
-                <Icon icon="iconoir:user" width="25" height="25"></Icon>
+                <Icon icon="lucide:user" width="25" height="25"></Icon>
               </div>
             </div>
           </div>
@@ -186,15 +186,15 @@ const emailColumnData = {
 }
 
 const topic = computed(() => ({
-  color: uiStore.dark ? '#E5EAF3' : '#303133',
-  background: uiStore.dark ? '#141414' : '#FFFFFF',
-  borderColor: uiStore.dark ? '#141414' : '#FFFFFF',
-  scaleLineColor: uiStore.dark ? '#636466' : '#CDD0D6',
-  crossColor: uiStore.dark ? '#8D9095' : '#A8ABB2',
-  axisColor: uiStore.dark ? '#A3A6AD' : '#909399',
-  splitLineColor: uiStore.dark ? '#58585B' : '#D4D7DE',
+  color: uiStore.dark ? '#e6eef4' : '#16202a',
+  background: uiStore.dark ? '#111a21' : '#ffffff',
+  borderColor: uiStore.dark ? '#111a21' : '#ffffff',
+  scaleLineColor: uiStore.dark ? '#2d3f4b' : '#d3dce5',
+  crossColor: uiStore.dark ? '#758894' : '#8494a1',
+  axisColor: uiStore.dark ? '#a2b3bf' : '#8494a1',
+  splitLineColor: uiStore.dark ? '#21303a' : '#e4e9ef',
   gaugeSplitLine: uiStore.dark ? '#CFD3DC' : '#606266',
-  containerBackground: uiStore.dark ? '#6C6E72' : '#E6EBF8'
+  containerBackground: uiStore.dark ? '#1b2831' : '#eef2f6'
 }))
 let daySendTotal = 0
 let leaveWidth = 0
@@ -376,7 +376,7 @@ function createSenderPie() {
         labelLine: {
           show: true
         },
-        color: ['#3CB2FF', '#13DEB9', '#FBBF24', '#FF7F50', '#BAE6FD', '#C084FC'] // 添加符合主题的配色
+        color: ['#46bfd0', '#3f8fd6', '#2f9e6f', '#d9a13b', '#7c6cf0', '#d4514b']
       }
     ]
   }
@@ -503,7 +503,7 @@ function createIncreaseLine() {
         smooth: 0.1,
         symbol: 'none',
         lineStyle: {
-          color: '#1D84FF',
+          color: '#0f7d8d',
           width: 2.5
         },
         areaStyle: {
@@ -518,7 +518,7 @@ function createIncreaseLine() {
             }
           ])
         },
-        color: ['#1D84FF'],
+        color: ['#0f7d8d'],
       }
     ]
   };
@@ -626,7 +626,7 @@ function createEmailColumnChart() {
         },
         data: emailColumnData.receiveData,
         itemStyle: {
-          color: '#3CB2FF',
+          color: '#46bfd0',
         }
       },
       {
@@ -641,7 +641,7 @@ function createEmailColumnChart() {
         },
         data: emailColumnData.sendData,
         itemStyle: {
-          color: '#13deb9',
+          color: '#2f9e6f',
         }
       }
     ]
@@ -671,13 +671,13 @@ function createSendGauge() {
         show: true,
         roundCap: true,
         itemStyle: {
-          color: '#3CB2FF'
+          color: '#46bfd0'
         }
       },
       // 指针颜色（新增）
       pointer: {
         itemStyle: {
-          color: '#3CB2FF'
+          color: '#46bfd0'
         }
       },
       axisLabel: {
@@ -716,7 +716,7 @@ function createSendGauge() {
         }
       }]
     }],
-    color: ['#3CB2FF']
+    color: ['#46bfd0']
   };
   sendGauge.setOption(option);
 }
@@ -746,41 +746,43 @@ function createSendGauge() {
 }
 
 .analysis {
-  height: 100%;
-  padding: 20px 20px 30px;
-  gap: 20px;
-  background: var(--extra-light-fill);
+  min-height: 100%;
+  padding: var(--cm-page-pad-y) var(--cm-page-pad-x) 30px;
+  gap: 16px;
+  background: var(--cm-canvas);
   display: grid;
   grid-auto-rows: min-content;
   @media (max-width: 1024px) {
-    padding: 15px 15px 30px;
-    gap: 15px
+    padding: 14px 14px 26px;
+    gap: 12px;
   }
 
   .title {
-    margin-top: 10px;
-    margin-left: 15px;
-    font-size: 18px;
-    font-weight: 500;
+    margin: 2px 0 0;
+    padding: 14px 18px 0;
+    font-size: 13.5px;
+    font-weight: 620;
+    color: var(--cm-text);
   }
 
   .number {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 20px;
+    gap: 12px;
     @media (max-width: 1366px) {
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 12px;
     }
     @media (max-width: 767px) {
       grid-template-columns: 1fr;
     }
 
     .number-item {
-      background: var(--el-bg-color);
-      border-radius: 8px;
-      border: 1px solid var(--el-border-color);
-      padding: 21px 20px;
+      background: var(--cm-surface);
+      border-radius: var(--cm-radius);
+      border: 1px solid var(--cm-line);
+      box-shadow: var(--cm-shadow-1);
+      padding: 18px 18px 16px;
 
       .top {
         display: grid;
@@ -794,15 +796,17 @@ function createSendGauge() {
           grid-auto-rows: min-content;
 
           > div:first-child {
-            font-size: 15px;
-          }
-
-          > div:last-child {
-            font-size: 13px;
+            font-size: 12.5px;
+            color: var(--cm-text-3);
+            font-weight: 500;
           }
 
           :deep(.el-statistic__number) {
-            font-size: 26px;
+            font-size: 27px;
+            font-weight: 640;
+            letter-spacing: -.02em;
+            color: var(--cm-text);
+            font-variant-numeric: tabular-nums;
           }
         }
 
@@ -811,14 +815,13 @@ function createSendGauge() {
           align-items: center;
 
           .count-icon {
-            top: 3px;
-            position: relative;
             display: grid;
-            align-items: center;
-            padding: 14px;
-            border-radius: 8px;
-            background: var(--el-color-primary-light-9);
-            color: var(--el-color-primary);
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: var(--cm-brand-soft);
+            color: var(--cm-brand-strong);
           }
         }
 
@@ -829,22 +832,25 @@ function createSendGauge() {
         display: grid;
         grid-template-columns:  auto auto;
         justify-content: start;
-        gap: 20px;
-        padding-top: 5px;
-        font-size: 14px;
+        gap: 16px;
+        padding-top: 10px;
+        margin-top: 4px;
+        border-top: 1px dashed var(--cm-line);
+        font-size: 12.5px;
+        color: var(--cm-text-3);
 
         .normal {
           width: fit-content;
-          color: var(--el-color-success);
-          font-weight: bold;;
-          margin-left: 3px;
+          color: var(--cm-success);
+          font-weight: 620;
+          margin-left: 4px;
         }
 
         .deleted {
           width: fit-content;
-          color: var(--el-color-danger);
-          font-weight: bold;;
-          margin-left: 3px;
+          color: var(--cm-danger);
+          font-weight: 620;
+          margin-left: 4px;
         }
       }
 
@@ -853,9 +859,9 @@ function createSendGauge() {
 
   .picture {
     display: grid;
-    grid-template-columns: 500px 1fr;
-    gap: 20px;
-    @media (max-width: 1620px) {
+    grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.5fr);
+    gap: 12px;
+    @media (max-width: 1100px) {
       grid-template-columns: 1fr;
     }
     @media (max-width: 1024px) {
@@ -863,9 +869,11 @@ function createSendGauge() {
     }
 
     .picture-item {
-      background: var(--el-bg-color);
-      border-radius: 8px;
-      border: 1px solid var(--el-border-color);
+      background: var(--cm-surface);
+      border-radius: var(--cm-radius);
+      border: 1px solid var(--cm-line);
+      box-shadow: var(--cm-shadow-1);
+      overflow: hidden;
 
       .source-button {
         padding-right: 15px;
@@ -878,14 +886,14 @@ function createSendGauge() {
       }
 
       .sender-pie {
-        height: 350px;
+        height: 320px;
         @media (max-width: 767px) {
           height: 200px;
         }
       }
 
       .increase-line {
-        height: 350px;
+        height: 320px;
         @media (max-width: 767px) {
           height: 280px;
         }

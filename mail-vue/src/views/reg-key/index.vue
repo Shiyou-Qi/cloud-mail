@@ -1,20 +1,30 @@
 <template>
-  <div class="reg-key">
-    <div class="header-actions">
-      <Icon class="icon" icon="ion:add-outline" width="23" height="23" @click="openAdd"/>
-      <div class="search">
-        <el-input
-            v-model="params.code"
-            class="search-input"
-            :placeholder="$t('searchRegKeyDesc')"
-        >
-        </el-input>
+  <div class="reg-key cm-page">
+    <div class="cm-toolbar">
+      <div class="cm-toolbar__group">
+        <button class="cm-icon-btn" type="button" :title="$t('add')" @click="openAdd">
+          <Icon icon="lucide:plus" width="17" height="17"/>
+        </button>
       </div>
-      <Icon class="icon" icon="iconoir:search" @click="search" width="20" height="20"/>
-      <Icon class="icon" icon="ion:reload" width="18" height="18" @click="refresh"/>
-      <Icon class="icon" icon="fluent:broom-sparkle-16-regular" width="22" height="22" @click="clearNotUse"/>
+      <span class="cm-toolbar__sep"></span>
+      <el-input v-model="params.code" class="reg-search" :placeholder="$t('searchRegKeyDesc')"
+                clearable @keyup.enter="search">
+        <template #prefix>
+          <Icon icon="lucide:search" width="15" height="15"/>
+        </template>
+      </el-input>
+      <div class="cm-toolbar__spacer"></div>
+      <div class="cm-toolbar__group">
+        <button class="cm-icon-btn" type="button" :title="$t('refresh')" @click="refresh">
+          <Icon icon="lucide:refresh-cw" width="16" height="16"/>
+        </button>
+        <button class="cm-icon-btn is-danger" type="button" :title="$t('clearNotUse')" @click="clearNotUse">
+          <Icon icon="lucide:eraser" width="16" height="16"/>
+        </button>
+      </div>
     </div>
 
+    <div class="cm-surface table-card">
     <el-scrollbar class="scrollbar">
       <div  class="loading" :class="regKeyLoading ? 'loading-show' : 'loading-hide'" :style="regKeyFirst ? 'background: transparent' : ''">
         <loading/>
@@ -43,7 +53,7 @@
             </div>
             <div class="info-right">
               <el-dropdown class="setting">
-                <Icon icon="fluent:settings-24-filled" width="21" height="21" color="#909399"/>
+                <Icon icon="lucide:settings" width="18" height="18" style="color: var(--cm-text-3)"/>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="copyCode(item.code)">{{ $t('copy') }}</el-dropdown-item>
@@ -60,11 +70,12 @@
         <el-empty v-if="!regKeyFirst" :image-size="isMobile ? 120 : null" :description="$t('noCodeFound')"/>
       </div>
     </el-scrollbar>
+    </div>
     <el-dialog v-model="showAdd" :title="$t('addRegKey')">
       <div class="container">
         <el-input v-model="addForm.code" :placeholder="$t('regKey')" @keyup.enter="submit">
           <template #suffix>
-            <Icon @click.stop="genCode" class="gen-code" icon="bitcoin-icons:refresh-filled" width="24" height="24"/>
+            <Icon @click.stop="genCode" class="gen-code" icon="lucide:refresh-cw" width="24" height="24"/>
           </template>
         </el-input>
         <el-select v-model="addForm.roleId" :placeholder="$t('roleDesc')">
@@ -395,26 +406,35 @@ function openAdd() {
   overflow: hidden;
 }
 
+.reg-search { width: min(260px, 42vw); }
+
+.table-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .scrollbar {
-  height: calc(100% - 48px);
+  flex: 1 1 auto;
+  min-height: 0;
   position: relative;
-  background: var(--settings-page-background);
-  @media (max-width: 372px) {
-    height: calc(100% - 85px);
-  }
 
   .code-box {
-    padding: 15px 15px 25px 15px;
+    padding: 16px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 15px;
+    gap: 12px;
 
     .code-item {
-      background: var(--el-bg-color);
-      border-radius: 8px;
-      border: 1px solid var(--el-border-color);
-      transition: all 200ms;
-      padding: 15px;
+      background: var(--cm-surface);
+      border-radius: 10px;
+      border: 1px solid var(--cm-line);
+      transition: border-color .16s ease, box-shadow .16s ease;
+      padding: 14px 16px;
+
+      &:hover { border-color: var(--cm-brand); box-shadow: 0 0 0 3px var(--cm-brand-soft); }
 
       .code-info {
         display: flex;
@@ -428,8 +448,10 @@ function openAdd() {
             padding-top: 5px;
 
             .code {
-              font-weight: bold;;
-              font-size: 16px;
+              font-weight: 620;
+              font-size: 15px;
+              letter-spacing: .04em;
+              color: var(--cm-text);
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -529,7 +551,7 @@ function openAdd() {
 }
 
 .gen-code {
-  color: #606266;
+  color: var(--cm-text-3);
   cursor: pointer;
 }
 
